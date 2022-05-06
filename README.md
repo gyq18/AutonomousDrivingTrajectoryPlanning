@@ -1,2 +1,134 @@
-# AutonomousDrivingTrajectoryPlanning
-LBADTP: Libraries and Benchmarks for Autonomous Driving Trajectory Planning
+# LBADTP: Libraries and Benchmarks for Autonomous Driving Trajectory Planning
+
+### [**Paper**](https://www.ieee-itsc2022.org/program/tpap-competition) | [**Competition Page**](https://www.ieee-itsc2022.org/program/tpap-competition)
+
+![](./results/result.png)
+
+This repository contains the implementation of the above paper. It is accepted to **T-TRO (2022)**.
+- Paper Link: https://www.ieee-itsc2022.org/program/tpap-competition
+- Authors: [Yuqing Guo](https://github.com/gyq18), [Danya Yao](https://www.au.tsinghua.edu.cn/info/1076/1608.htm), [Bai Li](http://grjl.hnu.edu.cn/p/19232984984B4AF50942E7C9F74E071F), [Li Li](https://www.au.tsinghua.edu.cn/info/1096/1530.htm)
+    - Contact Yuqing via email: gyq18@mails.tsinghua.edu.cn)
+- Talks & Videos: [YouTube](https://www.youtube.com/watch?v=BuIBXL2UNvI).
+
+## Introduction
+
+![Logo](assets/teaser.jpg)
+
+LBADTP provides various autonomous driving trajectory planning test scenarios and planners with the following features:
+- Test scenarios of varying complexity covering the full range of structured and unstructured autonomous driving applications.
+- A complete implementation of state-of-art trajectory planners in Matlab, Python, and C++. 
+
+
+## Benchmarks
+
+### Scenarios
+The test scenarios for autonomous driving trajectory planning are organized in the following structure:
+```
+scenarios/
+    ├ structured scenarios/
+        ├ Case1.csv
+        ├ Case2.csv
+        └ ...
+    └ unstructured scenarios/
+        ├ Case1.csv
+        ├ Case2.csv
+        └ ...
+```
+Each scenario contains the following information:
+- The information for planning ranges and obstacles
+- The vehicle geometrics and kinematics settings
+- The initial and terminal vehicle state constraints
+
+### Evaluation
+
+- Runtime
+- Score w.r.t. kinematic/dynamic feasibility, collision-free safety, trajectory smoothness, time-energy, etc.
+   - For more information about the score criteria, please refer to the score criteria in  [TPAP Competition](https://www.ieee-itsc2022.org/program/tpap-competition)
+
+## Libraries
+The code implementation of state-of-art trajectory planners in Matlab/Python/C++ is organized in the following structure.
+Here we take the Matlab language as an example.
+```
+matlab/
+    ├ main.m
+    ├ planners/
+        ├ curvesbased/
+            ├ PlanQuinticPolynomialPath.m
+            ├ PlanQuinticPolynomialTrajectory.m
+            ├ PlanBezierCurvesTrajectory.m
+            └ ...
+        ├ graphbased/
+            ├ PlanAStarPath.m
+            ├ PlanHybridAStarPath.m
+            ├ PlanHybridAStarPath.m
+            ├ PlanStateLatticePath.m
+            ├ PlanControlLatticeTrajectory.m
+            └ ...
+        ├ samplingbased/
+            ├ PlanInformedRRTPath.m
+            ├ PlanKinodynamicRRTTrajectory.m
+            ├ PlanCLRRTTrajectory.m
+            └ ...
+        ├ optimizationbased/
+            ├ PlanTEBTrajectory.m
+            ├ PlanOBCATrajectory.m
+            ├ PlanSCPTrajectory.m
+	├convex corridors for collision constraints/
+  	   ├FindCFS.m
+	   ├FindBox.m
+	   ├FindBubble.m
+                ├handling for kinematic constraints/
+                   ├SLIFS_L1.m
+	   ├SLIFS_L2.m
+        └ ...
+     ├ check collision/
+        ├ CheckByCircle.m
+        ├ CheckByAABB.m
+        ├ CheckByOBB.m
+        └ CheckByArea.m
+    └ ...
+```
+## Dependencies
+-[CPLEX](https://www.ibm.com/analytics/cplex-optimizer)
+-[IPOPT](https://github.com/coin-or/Ipopt)
+-[CASADi](https://github.com/casadi/casadi)
+
+## Citation
+
+If you find our code or paper useful, please consider citing
+```
+@article{guo2022trajectory,
+  title={Trajectory Planning for an Autonomous Vehicle in Spatially Constrained Environments},
+  author={Guo, Yuqing and Yao, Danya and Li, Bai and He, Zimin and Gao, Haichuan and Li, Li},
+  journal={IEEE Transactions on Intelligent Transportation Systems},
+  year={2022},
+  publisher={IEEE}
+}
+```
+
+## Contributors
+- [Yuqing Guo](https://github.com/gyq18)
+- [Chaoyi Sun](https://github.com/gyq18)
+- [Yakun Ouyang](https://github.com/gyq18)
+- [Yuxiang Guo](https://github.com/gyq18)
+- [Ze Yan](https://github.com/gyq18)
+- [Zhe Huang](https://github.com/gyq18)
+- [Qishen Zhao](https://github.com/gyq18)
+- [Nianchen Shen](https://github.com/gyq18)
+- [Shengyong Li](https://github.com/gyq18)
+- [Zhengyu Lai](https://github.com/gyq18)
+- [Ziming He](https://github.com/gyq18)
+
+
+## Acknowledgement
+
+-Special thanks to [Matthias Althoff](https://www.in.tum.de/i06/people/prof-dr-ing-matthias-althoff/) and [Kristoffer Bergman](http://users.isy.liu.se/rt/kribe48/) for their help.
+
+## Reference code
+
+- [AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics)
+- [changliuliu/CFS](https://github.com/changliuliu/CFS)
+- [XiaojingGeorgeZhang/H-OBCA](https://github.com/XiaojingGeorgeZhang/H-OBCA)
+- [libai1943/CartesianPlanner](https://github.com/libai1943/CartesianPlanner)
+
+
