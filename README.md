@@ -22,7 +22,7 @@ LBADTP provides various autonomous driving trajectory planning test scenarios an
 ## Benchmarks
 
 ### Scenarios
-The test scenarios for autonomous driving trajectory planning are organized in the following structure:
+The test scenarios for autonomous driving trajectory planners are organized in the following structure:
 ```
 scenarios/
     ├ structured scenarios/
@@ -49,27 +49,27 @@ Each scenario contains the following information:
 The code implementation of state-of-art trajectory planners in Matlab/Python/C++ is organized in the following structure.
 Here we take the Matlab language as an example.
 ```
-matlab/
-    ├ main.m
-    ├ planners/
-        ├ curvesbased/
+Matlab/
+    ├ Main.m
+    ├ Planners/
+        ├ Curvesbased/
             ├ PlanQuinticPolynomialPath.m
             ├ PlanQuinticPolynomialTrajectory.m
             ├ PlanBezierCurvesTrajectory.m
             └ ...
-        ├ graphbased/
+        ├ Graphbased/
             ├ PlanAStarPath.m
             ├ PlanHybridAStarPath.m
             ├ PlanHybridAStarPath.m
             ├ PlanStateLatticePath.m
             ├ PlanControlLatticeTrajectory.m
             └ ...
-        ├ samplingbased/
+        ├ Samplingbased/
             ├ PlanInformedRRTPath.m
             ├ PlanKinodynamicRRTTrajectory.m
             ├ PlanCLRRTTrajectory.m
             └ ...
-        ├ optimizationbased/
+        ├ Optimizationbased/
             ├ PlanTEBTrajectory.m
             ├ PlanOBCATrajectory.m
             ├ PlanSCPTrajectory.m
@@ -79,19 +79,22 @@ matlab/
 	   ├FindBubble.m
                 ├handling for kinematic constraints/
                    ├SLIFS_L1.m
-	   ├SLIFS_L2.m
+	           ├SLIFS_L2.m
         └ ...
-     ├ check collision/
+     ├ CheckCollision/
         ├ CheckByCircle.m
         ├ CheckByAABB.m
         ├ CheckByOBB.m
         └ CheckByArea.m
+    ├ ConvertPathtToTrajectory/
+        ├ PlanSpeedForStaicScenarios.m
+        ├ PlanSpeedForDynamicScenarios.m
     └ ...
 ```
 ## Dependencies
--[CPLEX](https://www.ibm.com/analytics/cplex-optimizer)
--[IPOPT](https://github.com/coin-or/Ipopt)
--[CASADi](https://github.com/casadi/casadi)
+- [CPLEX](https://www.ibm.com/analytics/cplex-optimizer)
+- [IPOPT](https://github.com/coin-or/Ipopt)
+- [CASADi](https://github.com/casadi/casadi)
 
 ## Citation
 
@@ -122,7 +125,7 @@ If you find our code or paper useful, please consider citing
 
 ## Acknowledgement
 
--Special thanks to [Matthias Althoff](https://www.in.tum.de/i06/people/prof-dr-ing-matthias-althoff/) and [Kristoffer Bergman](http://users.isy.liu.se/rt/kribe48/) for their help.
+Special thanks to [Matthias Althoff](https://www.in.tum.de/i06/people/prof-dr-ing-matthias-althoff/) and [Kristoffer Bergman](http://users.isy.liu.se/rt/kribe48/) for their help.
 
 ## Reference code
 
