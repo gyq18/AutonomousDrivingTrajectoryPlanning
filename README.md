@@ -79,7 +79,7 @@ Matlab/
 	   ├FindBubble.m
                 ├handling for kinematic constraints/
                    ├SLIFS_L1.m
-	           ├SLIFS_L2.m
+	  ├SLIFS_L2.m
         └ ...
      ├ CheckCollision/
         ├ CheckByCircle.m
@@ -95,6 +95,19 @@ Matlab/
 - [CPLEX](https://www.ibm.com/analytics/cplex-optimizer)
 - [IPOPT](https://github.com/coin-or/Ipopt)
 - [CASADi](https://github.com/casadi/casadi)
+
+## How to use
+
+1. Clone this repo.
+
+> git clone https://github.com/gyq18/AutonomousDrivingTrajectoryPlanning
+
+2. Install the required libraries.
+
+3. Execute main.m/main.py/main.cpp script in each directory. You can replace the planner in the main.m/main.py/main.cpp script.
+
+4. Add star to this repo if you like it :smiley:. 
+
 
 ## Citation
 
@@ -113,10 +126,10 @@ If you find our code or paper useful, please consider citing
 - [Yuqing Guo](https://github.com/gyq18)
 - [Chaoyi Sun](https://github.com/gyq18)
 - [Yakun Ouyang](https://github.com/gyq18)
-- [Yuxiang Guo](https://github.com/gyq18)
+- [Yuxiao Guo](https://github.com/gyq18)
 - [Ze Yan](https://github.com/gyq18)
 - [Zhe Huang](https://github.com/gyq18)
-- [Qishen Zhao](https://github.com/gyq18)
+- [Qichen Zhao](https://github.com/gyq18)
 - [Nianchen Shen](https://github.com/gyq18)
 - [Shengyong Li](https://github.com/gyq18)
 - [Zhengyu Lai](https://github.com/gyq18)
@@ -129,9 +142,18 @@ Special thanks to [Matthias Althoff](https://www.in.tum.de/i06/people/prof-dr-in
 
 ## Reference code
 
+- [MoveIt!](https://planners-benchmarking.readthedocs.io/en/latest/user_guide/2_motion_planners.html)
+- [Open Motion Planning Library (OMPL)](http://ompl.kavrakilab.org/)
+- [Stochastic Trajectory Optimization for Motion Planning (STOMP) ](http://wiki.ros.org/stomp_motion_planner)
+- [Open Motion Planning Library (OMPL)](http://ompl.kavrakilab.org/)
 - [AtsushiSakai/PythonRobotics](https://github.com/AtsushiSakai/PythonRobotics)
+- [TUMcps/CORA](https://github.com/TUMcps/CORA)
 - [changliuliu/CFS](https://github.com/changliuliu/CFS)
 - [XiaojingGeorgeZhang/H-OBCA](https://github.com/XiaojingGeorgeZhang/H-OBCA)
 - [libai1943/CartesianPlanner](https://github.com/libai1943/CartesianPlanner)
+- [libai2020/On_Road_Single_Vehicle_Trajectory_Decision](https://github.com/libai2020/On_Road_Single_Vehicle_Trajectory_Decision)
+- [rst-tu-dortmund/teb_local_planner](https://github.com/rst-tu-dortmund/teb_local_planner)
+- [Mesywang/Corridor-based and BezierCurve-based Trajectory](https://github.com/Mesywang/Motion-Planning-Algorithms/tree/master/HardConstraintTrajectoryOptimization)
+
 
 
