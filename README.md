@@ -52,16 +52,11 @@ Here we take the Matlab language as an example.
 Matlab/
     ├ Main.m
     ├ Planners/
-        ├ Curvesbased/
-            ├ PlanQuinticPolynomialPath.m
-            ├ PlanQuinticPolynomialTrajectory.m
-            ├ PlanBezierCurvesTrajectory.m
-            └ ...
         ├ Graphbased/
             ├ PlanAStarPath.m
             ├ PlanHybridAStarPath.m
             ├ PlanHybridAStarPath.m
-            ├ PlanStateLatticePath.m
+            ├ PlanSimpleStateLatticePath.m
             ├ PlanControlLatticeTrajectory.m
             └ ...
         ├ Samplingbased/
@@ -93,8 +88,7 @@ Matlab/
 ```
 ## Dependencies
 - [CPLEX](https://www.ibm.com/analytics/cplex-optimizer)
-- [IPOPT](https://github.com/coin-or/Ipopt)
-- [CASADi](https://github.com/casadi/casadi)
+
 
 ## How to use
 
