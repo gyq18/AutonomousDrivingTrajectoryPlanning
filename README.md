@@ -74,14 +74,14 @@ Matlab/
             ├ PlanOBCATrajectory.m
             ├ PlanSCPTrajectory.m
 	├convex corridors for collision constraints/
-  	   ├FindCFS.m
-	   ├FindBox.m
-	   ├FindBubble.m
-                ├handling for kinematic constraints/
-                   ├SLIFS_L1.m
-	  ├SLIFS_L2.m
+  	    ├FindCFS.m
+	    ├FindBox.m
+	    ├FindBubble.m
+        ├handling for kinematic constraints/
+            ├SLIFS_L1.m
+	    ├SLIFS_L2.m
         └ ...
-     ├ CheckCollision/
+    ├ CheckCollision/
         ├ CheckByCircle.m
         ├ CheckByAABB.m
         ├ CheckByOBB.m
@@ -123,18 +123,9 @@ If you find our code or paper useful, please consider citing
 ```
 
 ## Contributors
-- [Yuqing Guo](https://github.com/gyq18)
-- [Chaoyi Sun](https://github.com/gyq18)
-- [Yakun Ouyang](https://github.com/gyq18)
-- [Yuxiao Guo](https://github.com/gyq18)
-- [Ze Yan](https://github.com/gyq18)
-- [Zhe Huang](https://github.com/gyq18)
-- [Qichen Zhao](https://github.com/gyq18)
-- [Nianchen Shen](https://github.com/gyq18)
-- [Shengyong Li](https://github.com/gyq18)
-- [Zhengyu Lai](https://github.com/gyq18)
-- [Ziming He](https://github.com/gyq18)
-
+- [Yuqing Guo](https://github.com/gyq18), [Chaoyi Sun](https://github.com/gyq18),[Ziming He](https://github.com/gyq18),[Ze Yan](https://github.com/gyq18),[Qichen Zhao](https://github.com/gyq18),[Shengyong Li](https://github.com/gyq18),[Nianchen Shen](https://github.com/gyq18),[Zhengyu Lai](https://github.com/gyq18),and [Zhe Huang](https://github.com/gyq18) are with the Department of Automation, Tsinghua University, Beijing 100084, China.
+- [Bai Li](https://github.com/libai1943) and [Yakun Ouyang](https://github.com/yakunouyang) with the College of Mechanical and Vehicle Engineering, Hunan
+University, Changsha 410082, China.
 
 ## Acknowledgement
 
