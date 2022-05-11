@@ -65,16 +65,14 @@ Matlab/
             ├ PlanCLRRTTrajectory.m
             └ ...
         ├ Optimizationbased/
-            ├ PlanTEBTrajectory.m
             ├ PlanOBCATrajectory.m
             ├ PlanSCPTrajectory.m
-	├convex corridors for collision constraints/
-  	    ├FindCFS.m
-	    ├FindBox.m
-	    ├FindBubble.m
-        ├handling for kinematic constraints/
-            ├SLIFS_L1.m
-	    ├SLIFS_L2.m
+	    ├ PlanL1SCPTrajectory.m
+	    ├ PlanL2SCPTrajectory.m
+		├convex corridors for collision constraints/
+		    ├FindCFS.m
+		    ├FindBox.m
+		    ├FindBubble.m
         └ ...
     ├ CheckCollision/
         ├ CheckByCircle.m
