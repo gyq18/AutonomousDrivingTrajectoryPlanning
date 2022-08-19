@@ -4,8 +4,7 @@
 
 ![](./results/result.png)
 
-This repository contains the implementation of the above paper. It is accepted to **T-TRO (2022)**.
-- Paper Link: https://www.ieee-itsc2022.org/program/tpap-competition
+This repository contains code implementations in 3 languages of the mainstream trajectory planners in autonomous driving.
 - Authors: [Yuqing Guo](https://github.com/gyq18), [Danya Yao](https://www.au.tsinghua.edu.cn/info/1076/1608.htm), [Bai Li](http://grjl.hnu.edu.cn/p/19232984984B4AF50942E7C9F74E071F), [Li Li](https://www.au.tsinghua.edu.cn/info/1096/1530.htm)
     - Contact Yuqing via email: gyq18@mails.tsinghua.edu.cn)
 - Talks & Videos: [YouTube](https://www.youtube.com/watch?v=BuIBXL2UNvI).
