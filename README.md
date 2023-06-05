@@ -5,7 +5,7 @@
 ![](./results/result.png)
 
 This repository contains code implementations in 3 languages of the mainstream trajectory planners in autonomous driving.
-- Authors: [Yuqing Guo](https://github.com/gyq18),[Ziming He](https://github.com/gyq18), [Danya Yao](https://www.au.tsinghua.edu.cn/info/1076/1608.htm), [Bai Li](http://grjl.hnu.edu.cn/p/19232984984B4AF50942E7C9F74E071F), [Li Li](https://www.au.tsinghua.edu.cn/info/1096/1530.htm)
+- Authors: [Yuqing Guo](https://github.com/gyq18),[Zimin He](https://github.com/gyq18), [Danya Yao](https://www.au.tsinghua.edu.cn/info/1076/1608.htm), [Bai Li](http://grjl.hnu.edu.cn/p/19232984984B4AF50942E7C9F74E071F), [Li Li](https://www.au.tsinghua.edu.cn/info/1096/1530.htm)
     - Contact Yuqing via email: gyq18@mails.tsinghua.edu.cn)
 - Talks & Videos: [YouTube](https://www.youtube.com/watch?v=BuIBXL2UNvI).
 
@@ -114,7 +114,7 @@ If you find our code or paper useful, please consider citing
 ```
 
 ## Contributors
-- [Yuqing Guo](https://github.com/gyq18),[Ziming He](https://github.com/gyq18), [Chaoyi Sun](https://github.com/gyq18),[Ze Yan](https://github.com/gyq18),[Qichen Zhao](https://github.com/gyq18),[Shengyong Li](https://github.com/gyq18),[Nianchen Shen](https://github.com/gyq18),[Zhengyu Lai](https://github.com/gyq18),and [Zhe Huang](https://github.com/gyq18) are with the Department of Automation, Tsinghua University, Beijing 100084, China.
+- [Yuqing Guo](https://github.com/gyq18),[Zimin He](https://github.com/gyq18), [Chaoyi Sun](https://github.com/gyq18),[Ze Yan](https://github.com/gyq18),[Qichen Zhao](https://github.com/gyq18),[Shengyong Li](https://github.com/gyq18),[Nianchen Shen](https://github.com/gyq18),[Zhengyu Lai](https://github.com/gyq18),and [Zhe Huang](https://github.com/gyq18) are with the Department of Automation, Tsinghua University, Beijing 100084, China.
 - [Bai Li](https://github.com/libai1943) and [Yakun Ouyang](https://github.com/yakunouyang) with the College of Mechanical and Vehicle Engineering, Hunan
 University, Changsha 410082, China.
 
