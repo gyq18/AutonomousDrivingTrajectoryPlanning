@@ -1,3 +1,11 @@
+/*
+ * @Author: 李晟永 lishengy17@mails.tsinghua.edu.cn
+ * @Date: 2022-04-13 09:18:50
+ * @LastEditors: 李晟永 lishengy17@mails.tsinghua.edu.cn
+ * @LastEditTime: 2022-05-30 13:47:33
+ * @FilePath: /cpp code library/Visualize.h
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 #pragma once
 #include <iostream>
 #include <math.h>
@@ -63,3 +71,5 @@ public:
     }
     void DrawAxis(Mat canvas);
 };
+
+void DrawCircle(Mat img,Point place, int radius,int t);

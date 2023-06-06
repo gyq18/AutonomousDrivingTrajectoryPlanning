@@ -14,7 +14,7 @@ classdef LUT
             %   filename: the filename of lookup table
             obj.direction_num = 8;
             file = fopen(filename);
-            C = textscan(file, "%s", 'Delimiter','\n');
+            C = textscan(file, "%s", 'Delimiter', '\n');
             data_str = char(C{1});
             json_obj = jsondecode(data_str);
             obj.edge_length = json_obj.edge_length;
@@ -35,6 +35,7 @@ classdef LUT
             %   [0,0]
             %   to_pos: the desitabtion position.
             %   to_direction: the destinate direction.
+
             index = to_pos(1) * obj.edge_length * obj.direction_num + to_pos(2) * obj.direction_num + to_direction;
             result_table = obj.lut{start_direction+1};
             result = result_table(index + 1);

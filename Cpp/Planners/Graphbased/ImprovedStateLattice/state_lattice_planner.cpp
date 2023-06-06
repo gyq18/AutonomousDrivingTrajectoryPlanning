@@ -144,6 +144,7 @@ pair<vector<double>, vector<NodeIndex>> Astar(const StateLatticeGraph & graph,
                 // continue
                 continue;
             }
+            
             double temp_g_score = g_score[current_index] + edge_cost;
             if (temp_g_score < g_score[adj_index])
             {
@@ -168,6 +169,8 @@ bool check_move(const StateLatticeGraph & graph, Position from_pos, int from_dir
 {
     auto from_loc = pos2loc(from_pos, loc2pos_scale);
     auto to_loc = pos2loc(to_pos, loc2pos_scale);
+    vector<math::Vec2d> V = CreateVehiclePolygon(to_loc.x(), to_loc.y(), direction2theta(to_direction));
+    cout << V.size() << endl;
 
     auto iter = obstacles_.begin();
     for(; iter < obstacles_.end(); iter++)
@@ -177,7 +180,18 @@ bool check_move(const StateLatticeGraph & graph, Position from_pos, int from_dir
         {
             return false;
         }
-
+        if (checkObj_linev(V[0], V[1], *iter)) {
+            return false;
+        }
+        if (checkObj_linev(V[1], V[2], *iter)) {
+            return false;
+        }
+        if (checkObj_linev(V[2], V[3], *iter)) {
+            return false;
+        }
+        if (checkObj_linev(V[3], V[0], *iter)) {
+            return false;
+        }
         // TODO: it seems I can check all obstacles in one time.
         if (checkObj_linev(from_loc, to_loc, *iter))
         {

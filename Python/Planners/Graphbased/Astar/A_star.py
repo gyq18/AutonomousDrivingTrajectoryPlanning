@@ -1,6 +1,5 @@
 """
-
-参考工程https://github.com/AtsushiSakai/PythonRobotics/tree/master/PathPlanning/AStar
+https://github.com/AtsushiSakai/PythonRobotics/tree/master/PathPlanning/AStar
 
 """
 
@@ -21,8 +20,8 @@ from globalvar import hybrid_astar_Set
 from main_unstructure import CreateVehiclePolygon
 from main_unstructure import inpolygon
 
-from AABB import Vehicle_Allobj_AABB_Collision
-from Circumscribed_circle import Vehicle_Allobj_Circumscribed_Circle_Collision
+from CheckByAABB import Vehicle_Allobj_AABB_Collision
+from CheckByCircle import Vehicle_Allobj_Circumscribed_Circle_Collision
 
 global astar_
 astar_ = hybrid_astar_Set()
@@ -51,9 +50,6 @@ def get_motion_model():
     return motion
 
 # Convert actual distance to index value
-# 实际距离转换为索引值
-
-
 def calc_xy_index(position, dim):
     if(dim == 0):
         pos = math.ceil(position / astar_.resolution_x)
@@ -62,25 +58,16 @@ def calc_xy_index(position, dim):
     return pos
 
 # Key to convert node coordinates to dictionary
-# 节点坐标转换为字典的键
-
-
 def calc_grid_index(node):
     return node.y * astar_.num_nodes_x + node.x
 
 # Calculation of H value
-# h值的计算
-
-
 def calc_heuristic(n1, n2):
     w = 1.0  # weight of heuristic
     d = w * math.hypot(n1.x - n2.x, n1.y - n2.y)
     return d
 
 # Convert index value to actual distance
-# 索引值转换为实际距离
-
-
 def calc_grid_position(index, dim):
     """
     calc grid position
@@ -96,9 +83,6 @@ def calc_grid_position(index, dim):
     return pos
 
 # Confirm that the node is valid
-# 确认节点是有效的
-
-
 def verify_node(idx, idy):
     x = calc_grid_position(idx, 0)
     y = calc_grid_position(idy, 1)
@@ -130,9 +114,6 @@ def verify_node(idx, idy):
     return True
 
 # If the target point is not reached, look for the closest end point
-# 未到目标点，寻找最接近的终点
-
-
 def search_closest(ids, goalx, goaly, startx, starty):
     xx = startx
     yy = starty
@@ -145,9 +126,6 @@ def search_closest(ids, goalx, goaly, startx, starty):
     return [xx, yy]
 
 # Design 01 map
-# 设计 01 地图
-
-
 def costmap():
     map = np.zeros((round(astar_.num_nodes_x), round(astar_.num_nodes_y), 2))
     for obj in globalvar.obstacles_[0]:
@@ -182,7 +160,6 @@ costmap_ = costmap()
 
 def PlanAStarPath():
     # Function initial settings
-    # 函数初始设置
     vehicle_TPBV_ = globalvar.vehicle_TPBV_
     motion = get_motion_model()
     completeness_flag = 0
@@ -193,7 +170,6 @@ def PlanAStarPath():
     open_set, closed_set = dict(), dict()
     open_set[calc_grid_index(start_node)] = start_node
     # Start planning
-    # 开始规划
     while 1:
         if (len(open_set) == 0):
             [xx, yy] = search_closest(
@@ -207,7 +183,6 @@ def PlanAStarPath():
             print(path_length)
             return [x, y, theta, path_length, completeness_flag]
         # id is the converted key and node is the key value
-        # id是转换后的键，node是键值
         c_id = min(
             open_set, key=lambda o: open_set[o].cost + calc_heuristic(goal_node, open_set[o]))
         current = open_set[c_id]
@@ -250,9 +225,6 @@ def PlanAStarPath():
     return [x, y, theta, path_length, completeness_flag]
 
 # Final path planning
-# 最终路径的规划
-
-
 def calc_final_path(goal_node, closed_set):
     # generate final course
     rx, ry = [calc_grid_position(goal_node.x, 0)], [

@@ -1,8 +1,8 @@
 /*
  * @Author: Shengyong Li
  * @Date: 2022-04-21 13:07:46
- * @LastEditTime: 2022-04-23 11:03:14
- * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2022-05-15 16:31:21
+ * @LastEditors: lishengyong bakerhello@163.com
  * @Description: State Lattice Planner header file,
  */
 
@@ -53,6 +53,10 @@ public:
     std::vector<double> x;
     std::vector<double> y;
     std::vector<double> theta;
+    std::vector<double> v;
+    std::vector<double> a;
+    std::vector<double> phi;
+    std::vector<double> omega;
     double path_length;
     int is_complete = 0;
 };
@@ -140,11 +144,14 @@ double hlut(const ::LUT & lut, const StateLatticeGraph & graph, Position start_p
 
 
 /**
- * @description: The state lattice planning method. The target is defined in global variables.
+ * @description: The state lattice planning method. The target is difined in global variables.
  * @param {double} loc2pos_scale. The scale between location(real coordinate) to position(relative coordinate).
  * @param {string} lut_file. The lut filename.
  * @param {string} action_file. The action filename.
  * @param {string} insert_points_file. The insert_points filename.
  * @return The planning result.
  */
-PlanningResult SimpleStateLatticePlan(double loc2pos_scale, std::string lut_file, std::string action_file, std::string insert_points_file);
+PlanningResult SimpleStateLatticePlan(double loc2pos_scale, std::string lut_file, std::string insert_points_file);
+
+
+std::pair<double, double> SimpleStateLatticePlanBenchmarking(double loc2pos_scale, std::string lut_file, std::string insert_points_file, int times);

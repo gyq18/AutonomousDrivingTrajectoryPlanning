@@ -206,9 +206,10 @@ is_collision_free = 1;
 end
 
 function val = CalculateH(start_config, end_config)
-distance_nonholonomic_without_collision_avoidance = max(norm(start_config(1:2) - end_config(1:2)), CalculateRsPathLength(start_config, end_config));
-distance_holonomic_with_collision_avoidance = CalculateAStarPathLength(start_config, end_config);
-val = max(distance_nonholonomic_without_collision_avoidance, distance_holonomic_with_collision_avoidance);
+    val = norm(start_config(1:2) - end_config(1:2));
+    % distance_nonholonomic_without_collision_avoidance = max(norm(start_config(1:2) - end_config(1:2)), CalculateRsPathLength(start_config, end_config));
+    % distance_holonomic_with_collision_avoidance = CalculateAStarPathLength(start_config, end_config);
+    % val = max(distance_nonholonomic_without_collision_avoidance, distance_holonomic_with_collision_avoidance);
 end
 
 function path_length = CalculateRsPathLength(start_config, end_config)

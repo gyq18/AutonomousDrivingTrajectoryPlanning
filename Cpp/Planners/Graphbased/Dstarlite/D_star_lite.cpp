@@ -1,9 +1,5 @@
-//
 //  D_star_lite.cpp
-//  zqc_c++
-//
-//  Created by 枉叹之 on 2022/4/29.
-//
+
 
 #include "D_star_lite.hpp"
 #include <queue>

@@ -1,6 +1,6 @@
 function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_choice)
     %% Nonlinear kinematics equations are treated with L1 norm, and the vehicle is covered with a circle
-    % input: initialguess优化求解时需要一个初始猜测，此可由A*找到的路径提供；
+    % input: initialguess is required for optimal solution, this can be provided by the path found by A*.
     % collision_choice： 1-box; 2-convex feasible set (CFS);
     % output:
     % trajectory.x,trajectory.y,trajectory.theta,trajectory.v,trajectory.phi
@@ -17,8 +17,8 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
         obj = [obj; obstacles_{i}.x; obstacles_{i}.y];
     end
 
-    %% 对求解器赋初值
-    nstep = length(initialguess.x); % nstep=离散点的个数
+
+    nstep = length(initialguess.x); 
     tf0 = nstep;
     refpath_vec = zeros(2 * nstep, 1);
     refpath_vec(1:2:end) = initialguess.x';
@@ -28,68 +28,68 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
     phi0 = initialguess.phi'; phi = phi0;
     x0 = [refpath_vec; theta0; v0; phi0; tf0];
     path_k = refpath_vec;
-    Ts = x0(5 * nstep + 1) / (nstep - 1); %采样时间delta_t
+    Ts = x0(5 * nstep + 1) / (nstep - 1); %delta_t
 
-    % 决策变量数量
+  
     dim = 2;
-    num_dv = nstep * 5 + 1; %小车中心位置xn(2*nstep),theta(nstep),v(nstep),phi(nstep),tf(1)
-    % 辅助变量数量
+    num_dv = nstep * 5 + 1; %xn(2*nstep),theta(nstep),v(nstep),phi(nstep),tf(1)
+ 
     num_aux = 3 * nstep - 3;
-    % 避障约束最大数量
+
     num_collision_max = nstep * nobj;
 
-    %% 算法参数设置
-    % 回溯直线搜索的参数
+   %% Algorithm parameter setting
+    % Parameters for backtracking linear search
     beta1 = 0.7;
     alpha1 = 0.3;
     step_size = 1;
-    % 优化算法内置参数
+    % Optimisation algorithm built-in parameters
     iter = zeros(50, 1);
     alpha = 2.5;
     beta = 2.5;
     radius0 = 4;
     ratio = 3;
-    inner_maxiter = 50; %最大内循环次数
+    inner_maxiter = 50; % Maximum number of internal cycles
     rho1 = 0.2;
     rho2 = 0.9;
     threshold_linear_error = 0.01;
-    inner_counter = 3; %连续inner_counter次没有改进目标函数值，则退出循环
-    % 停止阈值
+    inner_counter = 3; % Exit the loop if the target function value is not improved for the inner_counter consecutive times
+    % Stop Threshold
     threshold = 1e-5;
-    % 外循环最大迭代次数
+    % Maximum number of outer loop iterations
     maxiter = 5;
-    % 目标函数惩罚权重
+    % Objective function penalty weights
     lambda = 1e5; %1e5;
-    % 回溯直线搜索merit function的权重
+    % Weight of the linear search merit function
     mup = 1e3;
-    % 信任域参数设置
-    radius_low = 1e-3; %最小的信任域半径
-    radius_up = 4.5; %最大的信任域半径
+    % Trust domain parameter setting
+    radius_low = 1e-3; % Minimum trust domain radius
+    radius_up = 4.5; % Maximum trust domain radius
 
-    %% 离散化的运动学方程
+    %% Discrete kinematic equations
     Apdyn = zeros(nstep - 1, dim * nstep);
     Aqdyn = zeros(nstep - 1, dim * nstep);
     Athetadyn = zeros(nstep - 1, nstep);
 
-    %% 离散的代数状态方程
+    %% Discrete algebraic equation of state
     Av1 = zeros(nstep - 1, num_dv + num_aux);
     Av2 = zeros(nstep - 1, num_dv + num_aux);
     Aphi1 = zeros(nstep - 1, num_dv + num_aux);
     Aphi2 = zeros(nstep - 1, num_dv + num_aux);
 
-    %% 新的
+  
     Obj1 = zeros(nstep - 1, num_dv + num_aux);
     Obj2 = zeros(nstep - 1, num_dv + num_aux);
 
     for k = 1:nstep - 1
-        %% 目标函数
+        %% Objective function
         Obj1(k, 3 * nstep + k:3 * nstep + k + 1) = [-1, 1];
         Obj2(k, 4 * nstep + k:4 * nstep + k + 1) = [-1, 1];
-        %% 离散化的运动学方程
+        %% Discrete kinematic equations
         Apdyn(k, 2 * k - 1:2 * k + 1) = [-1, 0, 1];
         Aqdyn(k, 2 * k:2 * k + 2) = [-1, 0, 1];
         Athetadyn(k, k:k + 1) = [-1, 1];
-        %% 离散的代数状态方程
+        %% Discrete algebraic equation of state
         index1 = [3 * nstep + k:3 * nstep + k + 1, num_dv];
         index2 = [4 * nstep + k:4 * nstep + k + 1, num_dv];
         Av1(k, index1) = [-1, 1, -vehicle_kinematics_.vehicle_a_max / (nstep - 1)];
@@ -100,17 +100,17 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
 
     k = nstep;
 
-    %% 目标函数的一次项
+
     F = zeros(num_dv + num_aux, 1);
-    F(num_dv) = 1; %使时间最小
-    F(num_dv + 1:end) = lambda * ones(num_aux, 1); %惩罚等式约束
+    F(num_dv) = 1; % Minimize time
+    F(num_dv + 1:end) = lambda * ones(num_aux, 1); % Penalty equation constraint
     f = zeros(num_dv, 1);
-    f(end) = 1; %使时间最小
-    % 目标函数的二次项
+    f(end) = 1; % Minimize time
+   
     H = 2 * (Obj1' * Obj1 + Obj2' * Obj2);
     H_x = 2 * (Obj1(:, 1:num_dv)' * Obj1(:, 1:num_dv) + Obj2(:, 1:num_dv)' * Obj2(:, 1:num_dv));
 
-    %% 等式约束：限制轨迹的起止状态x,y,theta,v,phi
+    %% Equation constraint: constrains the starting and ending states of the trajectory x,y,theta,v,phi
     Aeq0 = zeros(10, num_dv + num_aux);
     beq0 = zeros(10, 1); %[refpath_vec(1);refpath_vec(2);refpath_vec(nstep*dim-1);refpath_vec(nstep*dim);refpath_vec(3)-refpath_vec(1);refpath_vec(4)-refpath_vec(2);refpath_vec(end-1)-refpath_vec(end-3);refpath_vec(end)-refpath_vec(end-2)];
     Aeq0(1:2, 1:2) = eye(2); %initial_x;initial_y
@@ -130,73 +130,71 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
     beq0(9) = vehicle_TPBV_.phi0;
     beq0(10) = vehicle_TPBV_.phitf;
 
-    %% 边界条件约束
+    %% Boundary condition constraints
     lb = zeros(num_dv + num_aux, 1);
     ub = zeros(num_dv + num_aux, 1);
-    % 轨迹横纵坐标的范围限制
+    % Range limits for trajectory horizontal and vertical coordinates
     lb(1:dim:dim * nstep) = planning_scale_.xmin;
     lb(2:dim:dim * nstep) = planning_scale_.ymin;
     ub(1:dim:dim * nstep) = planning_scale_.xmax;
     ub(2:dim:dim * nstep) = planning_scale_.ymax;
-    % theta的上下界（这里设置无穷大是为了防止在特殊场景下角度以2pi倍数增长）
-    lb(2 * nstep + 1:3 * nstep) = -Inf;
-    ub(2 * nstep + 1:3 * nstep) = Inf;
-    % v的上下界
+    % upper and lower bounds for theta
+    lb(2 * nstep + 1:3 * nstep) = -10000; %-Inf
+    ub(2 * nstep + 1:3 * nstep) = 10000; %Inf
+    % Upper and lower bounds of v
     lb(3 * nstep + 1:4 * nstep) = vehicle_kinematics_.vehicle_v_min;
     ub(3 * nstep + 1:4 * nstep) = vehicle_kinematics_.vehicle_v_max;
-    % phi的上下界
+    % Upper and lower boundaries of phi
     lb(4 * nstep + 1:5 * nstep) = vehicle_kinematics_.vehicle_phi_min;
     ub(4 * nstep + 1:5 * nstep) = vehicle_kinematics_.vehicle_phi_max;
-    % 行驶时间的上下界
+    % Upper and lower boundaries of travel time
     lb(5 * nstep + 1) = 0;
     ub(5 * nstep + 1) = 1000;
-    % 等式惩罚
+    % Equation penalties
     lb(num_dv + 1:end) = 0; %lb(num_dv+1:end)=-inf;
     ub(num_dv + 1:end) = inf;
-    % 信任域约束
+    % Trust domain constraints
     Tr = zeros(num_dv, num_dv + num_aux);
     Tr(1:num_dv, 1:num_dv) = eye(num_dv);
 
-    % 计算x0的运动学约束满足情况
+    % Calculate the kinematic constraint satisfaction for x0
     F_x0 = [Apdyn * x0(1:2 * nstep) - Ts * vel(1:nstep - 1) .* cos(theta(1:nstep - 1)); Aqdyn * x0(1:2 * nstep) - Ts * vel(1:nstep - 1) .* sin(theta(1:nstep - 1)); Athetadyn * theta(1:nstep) - Ts / Lm * vel(1:nstep - 1) .* tan(phi(1:nstep - 1))];
 
-    % 对运动学约束F(x)=0进行线性化（一阶泰勒展开），得到delta_Jac和delta_b
+    % Linearisation of the kinematic constraint F(x) = 0 (first order Taylor expansion) gives delta_Jac and delta_b
     delta_Jac = ComputeJac(x0, Lm);
     delta_b = -F_x0 + delta_Jac * x0;
 
-    % 总目标函数值（包括原始目标和惩罚项）
+    % Total objective function value (including original objective and penalty term)
     J_x0 = 1/2 * x0' * H_x * x0 + f' * x0 + lambda * norm(F_x0, 1);
 
-    x_star = x0; % x_star是当前最好的轨迹
-    z0 = [x0; abs(F_x0)]; % z_trajectory = [x0;F_x0];  注意辅助变量大于等于0！！！！
+    x_star = x0; % x_star is the best current track
+    z0 = [x0; abs(F_x0)]; % z_trajectory = [x0;F_x0];  Note that auxiliary variables are greater than or equal to 0 ！！！！
     z = z0;
 
-    cost_counter = 1; %统计已经进行了多少次内循环
-    no_improve_counter = 0; %统计已经多少次没有改进原始目标函数值了
+    cost_counter = 1; % Count how many inner loops have been performed
+    no_improve_counter = 0; % How many times has the statistic not improved the original objective function value
     cost(cost_counter) = 1/2 * x0' * H_x * x0 + f' * x0;
     violation(cost_counter) = norm(F_x0, 1);
 
-    cost_violation = []; %这个所有约束的违反情况
+    cost_violation = [];  % This violation of all constraints
 
     eq_flag = 0;
 
-    %% 开始迭代
+    %% Start of iteration
     for k = 1:maxiter
-        radius = radius0; % %每次外循环迭代当障碍物没有时，只是信任域半径变了，重新又增大了
-        %% 避障约束
+        radius = radius0; 
+       % Obstacle avoidance constraints
         A = zeros(num_collision_max, num_dv + num_aux);
         b = zeros(num_collision_max, 1);
-        %% 避障约束
-        counter_collision = 1; %统计避障约束的数量
-        % 对于每一个时刻进行迭代
+        counter_collision = 1; 
         for i = 1:nstep
             indexi = (i - 1) * dim + 1:i * dim;
-            xnr = path_k(indexi); % xnr是列向量
-            % 为xnr计算凸可行集
+            xnr = path_k(indexi); % xnr is a column vector
+             % Compute the convex feasible set for xnr
             if collision_choice == 1
-                [tempA, tempb] = Find_Box_for_all_obj(xnr);
+                [tempA, tempb] = FindBox(xnr);
             elseif collision_choice == 2
-                [tempA, tempb, ~] = Find_CFS_for_all_obj(xnr, obj);
+                [tempA, tempb, ~] = FindCFS(xnr, obj);
             end
 
             num_tempA = length(tempb);
@@ -209,7 +207,6 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
             end
 
             counter_collision = counter_collision + num_tempA;
-            % 计算其他圆心xir的凸可行集约束，并将其转换到决策变量xr和xnr的线性约束
         end
 
         num_collision = counter_collision - 1;
@@ -217,7 +214,7 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
         Aineq = zeros(num_constraint, num_dv + num_aux);
         bineq = zeros(num_constraint, 1);
 
-        %% 外循环是CFS的循环，内循环是针对固定的凸可行集进行优化的循环
+        %% Outer loops are CFS loops, inner loops are loops optimized for a fixed convex feasible set
         Aineq(1:num_collision, :) = A(1:num_collision, :);
         Aineq(num_collision + 1:num_collision + nstep - 1, :) = Av1;
         Aineq(num_collision + nstep:num_collision + 2 * (nstep - 1), :) = Av2;
@@ -230,7 +227,7 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
 
         bineq(1:num_collision) = b(1:num_collision);
 
-        z_last = z0; % 保存上一次的解
+        z_last = z0; 
 
         for inner_index = 1:inner_maxiter
             Aineq(num_collision + 4 * nstep - 3:num_collision + 4 * nstep - 4 + num_aux, 1:num_dv) = delta_Jac;
@@ -243,7 +240,6 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
 
             cost_counter = cost_counter + 1;
 
-            %% 在未计算前就统计约束违反情况
             ceq1 = Aeq0 * z0 - beq0;
             theta = z0(2 * nstep + 1:3 * nstep);
             vel = z0(3 * nstep + 1:4 * nstep);
@@ -252,24 +248,24 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
             ceq2 = [Apdyn * z0(1:2 * nstep) - Ts * vel(1:nstep - 1) .* cos(theta(1:nstep - 1)); Aqdyn * z0(1:2 * nstep) - Ts * vel(1:nstep - 1) .* sin(theta(1:nstep - 1)); Athetadyn * theta(1:nstep) - Ts / Lm * vel(1:nstep - 1) .* tan(phi(1:nstep - 1))];
             ceq = [ceq1; ceq2];
 
-            %% 不等式
+           
             cineq1 = Aineq(1:num_dv, :) * z0 - bineq(1:num_dv);
             cineq2 = lb(1:num_dv) - z0(1:num_dv);
             cineq3 = z0(1:num_dv) - ub(1:num_dv);
             cineq = [cineq1; cineq2; cineq3];
 
-            %% 定义约束违反度
+         
             vv = [norm(max(cineq, 0), 2), norm(ceq1, 2), norm(ceq2, 2)];
             cost_violation = [cost_violation; vv];
 
-            if norm(ceq2, 2) < 0.001 %如果约束满足则直接退出循环  1e-2
+            if norm(ceq2, 2) < 0.001 %If the constraint is satisfied then simply exit the loop  1e-2
                 x = z0(1:num_dv);
                 isFeasible = 1;
                 eq_flag = 1;
                 break;
             end
 
-            %% 如果前后两次约束违反的变化量小于一定值也退出
+           %% if the change between the two constraint violations is less than a certain value
             if k > 1
 
                 if norm(cost_violation(k, 3) - cost_violation(k - 1, 3)) < 0.001
@@ -278,7 +274,7 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
 
             end
 
-            %% 求解底层优化问题
+          %% Solve the underlying optimisation problem
             options = cplexoptimset;
             options.Display = 'off';
             [z, ~, exitflag, ~] = cplexqp(H, F, Aineq, bineq, Aeq0, beq0, lb, ub, z0, options);
@@ -301,7 +297,7 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
             aux = z(num_dv + 1:end);
             x = z(1:num_dv);
 
-            %% 计算delta_J和delta_L
+             %% Calculate delta_J and delta_L
             theta = x(2 * nstep + 1:3 * nstep);
             vel = x(3 * nstep + 1:4 * nstep);
             phi = x(4 * nstep + 1:5 * nstep);
@@ -312,13 +308,13 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
             L_x = 1/2 * x' * H_x * x + f' * x + lambda * norm(aux, 1);
             delta_L = J_x0 - L_x;
 
-            if norm(F_x, 1) < 1e-5 % 新增语句，如果约束满足则直接退出循环  1e-2
+            if norm(F_x, 1) < 1e-5 % Add a new statement to exit the loop directly if the constraint is satisfied 1e-2
                 isFeasible = 1;
                 eq_flag = 1;
                 break;
             end
 
-            %% 如果是内循环的第一次迭代，则直接接受
+            %% If it is the first iteration of an inner loop, accept directly
             if ((inner_index == 1) && (delta_L > threshold))
                 x0 = x;
                 F_x0 = F_x;
@@ -328,13 +324,13 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
                 z0 = [x0; abs(F_x0)]; %z0 = [x0;abs(F_x0)];
                 cost(cost_counter) = 1/2 * x0' * H_x * x0 + f' * x0;
                 violation(cost_counter) = norm(F_x0, 1);
-                radius = radius / ratio; % 跳变时进行大范围搜索，因此使用大的信任域半径，局部优化使用小信任域半径
+                radius = radius / ratio; % Large range search for jumping, so use large trust domain radius, small trust domain radius for local optimisation
                 continue;
             end
 
-            if delta_J < -1e-3 % 说明没有起到改进轨迹的作用（信任域较大时一般会出现这种情况）
+            if delta_J < -1e-3 % Description does not serve to improve the trajectory (this is generally the case when the trust domain is large)
 
-                if radius <= radius_low % %注意：主要是在这一步退出程序的，改进很小！！
+                if radius <= radius_low % Note: It is mainly at this step that the program is exited with minimal improvement!
                     break;
                 end
 
@@ -348,10 +344,10 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
                 end
 
                 radius = max(radius / alpha, radius_low);
-                %% 回溯直线搜索
+               % Backtracking linear search
                 delta_x = (x - x0);
 
-                % 如果改变量很接近，则退出内循环
+                 %  Exit inner loop if change is close
                 if norm(delta_x) > 0.001 * nstep * (dim)
                     merit_function_x0 = 1/2 * x0' * H_x * x0 +f' * x0 + mup * norm(F_x0, 1);
                     D_merit_function_x0 = (x0' * H_x + f' + mup * sign(F_x0)' * delta_Jac) * delta_x;
@@ -389,19 +385,19 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
                 J_x0 = J_x;
                 z0 = [x0; abs(F_x0)]; %z0 = [x0;F_x0];
 
-                % 判断线性化近似程度，以调整信任域半径
+                % Judge the degree of linearisation approximation to adjust the radius of the trust domain
                 if norm(aux, 1) > threshold_linear_error
                     rho_k = norm(aux, 1) / norm(F_x, 1);
                 else
                     rho_k = threshold_linear_error / norm(F_x, 1);
                 end
 
-                if rho_k < rho1 %线性化误差较大，缩小信任域
+                if rho_k < rho1 % Linearisation error is large, narrowing the trust domain
                     radius = max(radius / alpha, radius_low);
                 else
                     threshold_linear_error = 0.1 * threshold_linear_error;
 
-                    if rho_k >= rho2 % 线性化误差较小，可适当扩大信任域
+                    if rho_k >= rho2 % Linearisation error is small and the trust domain can be extended appropriately
                         radius = min(beta * radius, radius_up);
                     end
 
@@ -412,7 +408,7 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
             cost(cost_counter) = 1/2 * x0' * H_x * x0 + f' * x0;
             violation(cost_counter) = norm(F_x0, 1);
 
-            % 如果约束违反程度较小了，认为此时快进入收敛阶段了，则直接将信任域半径设置为较小的值
+             % If the constraint violation is small enough that convergence is imminent, set the trust domain radius to a smaller value
             if (norm(aux, 1) < 1e-4) && ((violation(cost_counter) < 0.1) || ((violation(cost_counter) < 0.5) && (abs(violation(cost_counter) - violation(cost_counter - 1) < 0.1))))
                 radius = min(radius, 0.01);
             end
@@ -426,17 +422,17 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
             eq_flag = 1;
         end
 
-        if eq_flag == 1 % 新增语句，如果约束满足则直接退出循环
+        if eq_flag == 1 % Add a new statement to exit the loop directly if the constraint is satisfied
             break;
         end
 
     end
 
-    %% 在结束后再统计一次计算违反约束的情况
+    %% Count constraint violations once more at the end
     vv = [norm(max(cineq, 0), 2), norm(ceq1, 2), norm(F_x0, 2)];
     cost_violation = [cost_violation; vv];
 
-    %% 判断迭代maxiter次找到的轨迹是否满足运动学约束和避障约束（是否真正找到可行解）
+     %% Determine whether the trajectory found in maxiter iterations satisfies the kinematic and obstacle avoidance constraints (whether a feasible solution is actually found)
     if isFeasible
 
         if sum(lb - z) <= 0 && sum(z - ub) <= 0 && sum(Aineq * z - bineq) <= 0 && sum(abs(Aeq0 * z - beq0)) <= 0.1
@@ -447,23 +443,24 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
 
     end
 
-    %% 如果用求解器cplexqp迭代很多次仍未找到可行解，则采用fmincon求解器再试图求解
+    %% If a feasible solution is not found after many iterations with the solver cplexqp, then the fmincon solver is used to try to solve it again
     if isFeasible == 0 || isempty(z)
-        fun = @(x)1/2 * x' * H_x * x + f' * x;
-        nonlcon = @(x)kinematiccon(x, nstep, Apdyn, Aqdyn, Athetadyn, Lm);
-        options = optimoptions('fmincon', 'Display', 'off', 'Algorithm', 'sqp');
-        [x, ~, exitflag, ~] = fmincon(fun, x0, Aineq(1:num_collision + 4 * (nstep - 1), 1:num_dv), bineq(1:num_collision + 4 * (nstep - 1)), Aeq0(:, 1:num_dv), beq0, lb(1:num_dv), ub(1:num_dv), nonlcon, options);
-
-        if isempty(x) || exitflag == -2
-            isFeasible = 0;
-            x = [refpath_vec; theta0; v0; phi0; tf0];
-        end
+        x = [];
+%         fun = @(x)1/2 * x' * H_x * x + f' * x;
+%         nonlcon = @(x)kinematiccon(x, nstep, Apdyn, Aqdyn, Athetadyn, Lm);
+%         options = optimoptions('fmincon', 'Display', 'off', 'Algorithm', 'sqp');
+%         [x, ~, exitflag, ~] = fmincon(fun, x0, Aineq(1:num_collision + 4 * (nstep - 1), 1:num_dv), bineq(1:num_collision + 4 * (nstep - 1)), Aeq0(:, 1:num_dv), beq0, lb(1:num_dv), ub(1:num_dv), nonlcon, options);
+% 
+%         if isempty(x) || exitflag == -2
+%             isFeasible = 0;
+%             x = [refpath_vec; theta0; v0; phi0; tf0];
+%         end
 
     else
         x = z(1:num_dv);
     end
 
-    %% 再次对求得的解进行约束检查
+   %% Constraint checking of the resulting solution again
     if isFeasible == 1
 
         if norm(kinematiccon(x, nstep, Apdyn, Aqdyn, Athetadyn, Lm)) < 1e-3 && sum(lb(1:num_dv) - x) <= 0 ...
@@ -475,13 +472,17 @@ function [trajectory, isFeasible] = PlanL1SCPTrajectory(initialguess, collision_
         end
 
     end
-
-    trajectory.x = x(1:2:dim * nstep);
-    trajectory.y = x(2:2:dim * nstep);
-    trajectory.theta = x(2 * nstep + 1:3 * nstep);
-    trajectory.v = x(3 * nstep + 1:4 * nstep);
-    trajectory.phi = x(4 * nstep + 1:5 * nstep);
-    trajectory.tf = x(5 * nstep + 1);
+    
+    if isFeasible == 1
+        trajectory.x = x(1:2:dim * nstep);
+        trajectory.y = x(2:2:dim * nstep);
+        trajectory.theta = x(2 * nstep + 1:3 * nstep);
+        trajectory.v = x(3 * nstep + 1:4 * nstep);
+        trajectory.phi = x(4 * nstep + 1:5 * nstep);
+        trajectory.tf = x(5 * nstep + 1);
+    else
+        trajectory = 0;
+    end
 
 end
 
@@ -511,9 +512,9 @@ function Jac = ComputeJac(x, Lm)
 
 end
 
-%% 第一种处理碰撞约束的方法：Box
-function [A, b] = Find_Box_for_all_obj(xr)
-    % xr的大小2*1
+%% Find Box for all obstacles
+function [A, b] = FindBox(xr)
+     % xr:2*1, for the point
     [xc, yc] = SpinTrial(xr(1), xr(2));
     lb = GetAabbLength(xc, yc);
     bxmax = max(xc + lb(4), xc - lb(2)); bxmin = min(xc + lb(4), xc - lb(2));
@@ -661,22 +662,18 @@ function [A, b] = Find_Box_for_all_obj(xr)
 
 end
 
-%% 第二种处理碰撞约束的方法：CFS
-function [A, b, d] = Find_CFS_for_all_obj(xr, obstacle)
-    %% 针对障碍物所有obj，为当前参考点xr寻找凸可行集CFS：F(xr)
-    % xr的大小2*1，obj的大小2*4（每一列是一个顶点的坐标）
-    %% 首先确定函数phi：因为实例中的障碍物都是凸的，因此phi取为文献中的公式(23)
-    % 1. 需要注意的是，公式（23）所示的是phi是凸函数，并且光滑，因此次梯度集合为单点集，只包含一个元素——梯度
-    % 2. 此外我们需要寻找障碍物边界上距离xr最近的点：依次考虑各个相邻顶点
-    ncorner = size(obstacle, 2); %障碍物顶点个数
+%% Find CFS for all obstacles
+function [A, b, d] = FindCFS(xr, obstacle)
+    % the point xr:2*1, obstacle 2n*4
+    ncorner = size(obstacle, 2); %the number of vertices in the obstacles (4)
     nobj = size(obstacle, 1) / 2;
-    d = inf * ones(nobj, 1); % xr到障碍物的最小距离初始值设为无穷大
-    % 考虑所有的障碍物，得到的凸可行集(aTx<=b)保存在pre_A和pre_b中
+    d = inf * ones(nobj, 1); 
+    % (aTx<=b):pre_A,pre_b
     pre_A = zeros(nobj, 2);
     pre_b = zeros(nobj, 1);
     counter = 0;
-    index_true = ones(nobj, 1); % index_true(j)=0表示排除了第j条直线
-    %% 确定了函数phi之后，F(xr)为：phi(xr) + delta_phi(xr)*(x-xr)>=0
+    index_true = ones(nobj, 1); % index_true(j)=0 means the jth line is excluded
+    % After determining the function phi, F(xr) is: phi(xr) + delta_phi(xr)*(x-xr)>=0
     for j = 1:nobj
         counter = counter + 1;
         obj = obstacle(2 * j - 1:2 * j, :);
@@ -684,20 +681,21 @@ function [A, b, d] = Find_CFS_for_all_obj(xr, obstacle)
         for i = 1:ncorner
             corner1 = obj(:, i);
             corner2 = obj(:, mod(i, ncorner) + 1);
-            % xr,corner1以及corner2三点构成三角形，求三边的长度
+             % xr,corner1 and corner2 form a triangle and find the lengths of the three sides
             dist_r1 = norm(xr - corner1);
             dist_r2 = norm(xr - corner2);
             dist_12 = norm(corner1 - corner2);
-            % 若角r12为钝角，则此时xr距离corner1更近
-            if (dist_r1^2 + dist_12^2 - dist_r2^2) < -1e-4 %余弦定理
+            % If angle r12 is obtuse, then xr is closer to corner1 at this point
+            if (dist_r1^2 + dist_12^2 - dist_r2^2) < -1e-4 % Cosine Theorem
                 temp_d = dist_r1;
                 temp_A = xr' - corner1';
                 temp_b = temp_A * corner1;
-            elseif (dist_r2^2 + dist_12^2 - dist_r1^2) < -1e-4 % 若角r21为钝角，则此时xr距离corner2更近
+            elseif (dist_r2^2 + dist_12^2 - dist_r1^2) < -1e-4 % If angle r21 is obtuse, then xr is closer to corner2 at this point
                 temp_d = dist_r2;
                 temp_A = xr' - corner2';
                 temp_b = temp_A * corner2;
-            else % 若角r12以及角r21均为锐角，则xr到由corner1和corner2构成的直线段的垂线最短
+            else
+                % If angle r12 and angle r21 are both acute, then the vertical line from xr to the segment of the line formed by corner1 and corner2 is the shortest
                 project_length = (xr - corner1)' * (corner2 - corner1) / dist_12;
                 temp_d = sqrt(dist_r1^2 - project_length^2);
                 temp_A = [corner1(2) - corner2(2), corner2(1) - corner1(1)];
@@ -716,7 +714,7 @@ function [A, b, d] = Find_CFS_for_all_obj(xr, obstacle)
         single_A = single_A / length_A;
         single_b = single_b / length_A;
 
-        %     %% 离xr最近的顶点的对角点，与xr应该分居直线Ax=b的两侧
+        % the diagonal point of the vertex nearest to xr, which should be on either side of the line Ax = b with xr
         for kkk = 1:ncorner
 
             if single_A * obj(:, kkk) < single_b
@@ -732,8 +730,9 @@ function [A, b, d] = Find_CFS_for_all_obj(xr, obstacle)
 
     end
 
-    %% 看看是否pre_A和pre_b中是否有冗余约束
-    %% 在上面，每一个障碍物都对应找了一条直线分割xr和障碍物本身。如果排除这条直线，剩下的直线仍然可以分割这个障碍物和xr,则这条直线确实可以从约束中排除
+    % See if there are redundant constraints in pre_A and pre_b
+    % Above, each obstacle corresponds to finding a straight line dividing xr and the obstacle itself. 
+    % If excluding this line leaves a line that still splits this obstacle and xr, then this line can indeed be excluded from the constraint
     for j = 1:nobj
         temp_index = index_true;
         temp_index(j) = 0;

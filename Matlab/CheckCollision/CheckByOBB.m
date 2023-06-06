@@ -1,9 +1,19 @@
 % OBB collision detection
 % https://blog.csdn.net/silangquan/article/details/50812425
-function Is_collision = CheckByOBB(x, y, theta, obj)
+function Is_collision = CheckByOBB(x, y, theta)
+    Is_collision = 0;
+    global obstacles_ Nobs
     % Get vehicle Edge Data
     V = CreateVehiclePolygon(x, y, theta);
-    Is_collision = OBB_Quadrilateral_Collision(V, obj);
+    for i = 1:Nobs
+        vertex_x = obstacles_{i}.x;
+        vertex_y = obstacles_{i}.y;
+        obj=[vertex_x;vertex_y];
+        Is_collision = OBB_Quadrilateral_Collision(V, obj);
+        if Is_collision
+            break;
+        end
+    end
 end
 
 % OBB projection quadrilateral collision detection
@@ -37,36 +47,28 @@ function Is_collision = OBB_Quadrilateral_Collision(V1, V2)
 
     % CASE 1:
     % L = Ax
-    % | T â€? Ax | > WA + | ( WB*Bx ) â€? Ax | + |( HB*By ) â€? Ax |
     % If true, there is a separating axis parallel Ax.
-    if (abs(T .* Ax) > WA + abs((WB * Bx) .* Ax) + abs((HB * By) .* Ax))
+    if (norm(T .* Ax) > WA + norm((WB * Bx) .* Ax) + norm((HB * By) .* Ax))
         Separating_Axis = Separating_Axis + 1;
     end
-
     % CASE 2:
     % L = Ay
-    % | T â€? Ay | > HA + | ( WB*Bx ) â€? Ay | + |( HB*By ) â€? Ay |
     % If true, there is a separating axis parallel Ax.
-    if (abs(T .* Ay) > HA + abs((WB * Bx) .* Ay) + abs((HB * By) .* Ay))
+    if (norm(T .* Ay) > HA + norm((WB * Bx) .* Ay) + norm((HB * By) .* Ay))
         Separating_Axis = Separating_Axis + 1;
     end
-
     % CASE 3:
     % L = Bx
-    % | T â€? Bx | > | ( WA* Ax ) â€? Bx | + | ( HA*Ay ) â€? Bx | + WB
     % If true, there is a separating axis parallel Bx.
-    if (abs(T .* Bx) > WB + abs((WA * Ax) .* Bx) + abs((HA * Ay) .* Bx))
+    if (norm(T .* Bx) > WB + norm((WA * Ax) .* Bx) + norm((HA * Ay) .* Bx))
         Separating_Axis = Separating_Axis + 1;
     end
-
     % CASE 4:
     % L = By
-    % | T â€? By | > | ( WA* Ax ) â€? By | + | ( HA*Ay ) â€? By | + HB
     % If true, there is a separating axis parallel By.
-    if (abs(T .* By) > HB + abs((WA * Ax) .* By) + abs((HA * Ay) .* By))
+    if (norm(T .* By) > HB + norm((WA * Ax) .* By) + norm((HA * Ay) .* By))
         Separating_Axis = Separating_Axis + 1;
     end
-
     if (Separating_Axis > 0)
         Is_collision = 0;
     else
@@ -89,6 +91,7 @@ function V = CreateVehiclePolygon(x, y, theta)
     BY = y + (vehicle_geometrics_.vehicle_front_hang + vehicle_geometrics_.vehicle_wheelbase) * sin_theta - vehicle_half_width * cos_theta;
     CY = y - vehicle_geometrics_.vehicle_rear_hang * sin_theta - vehicle_half_width * cos_theta;
     DY = y - vehicle_geometrics_.vehicle_rear_hang * sin_theta + vehicle_half_width * cos_theta;
-    V.x = [AX, BX, CX, DX, AX];
-    V.y = [AY, BY, CY, DY, AY];
+%     V.x = [AX, BX, CX, DX, AX];
+%     V.y = [AY, BY, CY, DY, AY]; 
+    V = [AX, BX, CX, DX, AX;AY, BY, CY, DY, AY];
 end

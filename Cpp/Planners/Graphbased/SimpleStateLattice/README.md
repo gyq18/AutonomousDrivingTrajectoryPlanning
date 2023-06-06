@@ -1,7 +1,7 @@
 <!--
  * @Author: Shengyong Li
  * @Date: 2022-04-23 11:34:30
- * @LastEditTime: 2022-04-23 11:52:42
+ * @LastEditTime: 2022-04-23 20:10:03
  * @LastEditors: Please set LastEditors
  * @Description: Implementation of State Lattice Planning
 -->
@@ -44,4 +44,4 @@ make
 ./main
 ```
 
-! do make sure the **action.txt**, **insert_points.txt** and **look_up_table_153244.txt** have the correct relative path to the excutable program.
+! do make sure the **insert_points.txt** and **look_up_table_153244.txt** have the correct relative path to the excutable program.

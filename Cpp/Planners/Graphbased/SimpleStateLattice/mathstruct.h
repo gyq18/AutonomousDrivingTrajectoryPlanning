@@ -51,15 +51,16 @@ struct Vehicle_kinematics_ {
 
 //scenario settings
 struct Planning_scale_ {
-    double xmin, xmax, ymin, ymax, x_scale, y_scale;
+    double xmin, xmax, ymin, ymax;
     Planning_scale_() {
         this->xmin = 0;
         this->xmax = 40;
         this->ymin = 0;
         this->ymax = 40;
-        this->x_scale = this->xmax - this->xmin;
-        this->y_scale = this->ymax - this->ymin;
     }
+
+    double x_scale() {return this->xmax - this->xmin;}
+    double y_scale() {return this->ymax - this->ymin;}
 };
 
 // M_PI is difined in math.h before.
@@ -73,8 +74,8 @@ struct Hybrid_astar_ {
         this->resolution_x = 0.3;
         this->resolution_y = 0.3;
         this->resolution_theta = 0.5;
-        this->num_nodes_x = ceil(planning_scale_.x_scale / this->resolution_x) + 1;
-        this->num_nodes_y = ceil(planning_scale_.y_scale / this->resolution_x) + 1;
+        this->num_nodes_x = ceil(planning_scale_.x_scale() / this->resolution_x) + 1;
+        this->num_nodes_y = ceil(planning_scale_.y_scale() / this->resolution_x) + 1;
         this->num_nodes_theta = ceil(2 * M_PI / this->resolution_theta) + 1;
         this->penalty_for_backward = 1;
         this->penalty_for_direction_changes = 3;

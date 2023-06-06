@@ -31,7 +31,7 @@ int loaddata();
 vector<double> InputData_To_Vector(string filename);
 vector < vector<math::Vec2d>> obstacles_ = GenerateStaticObstacles_unstructured();
 int main(int argc, char** argv) {
-    //Mat test = imread("test.jpg"); //载入图像到test
+    //Mat test = imread("test.jpg");
     //imshow("test", test);
     //waitKey(0);
     //printf("%f\n", vehicle_kinematics_.min_turning_radius);

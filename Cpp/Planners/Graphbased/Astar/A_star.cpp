@@ -1,9 +1,4 @@
-//
 //  A_star.cpp
-//  untitled
-//
-//  Created by 枉叹之 on 2022/4/23.
-//
 
 #include "A_star.hpp"
 #include <queue>
@@ -20,7 +15,6 @@ extern vector<vector<math::Vec2d>> obstacles_;
 priority_queue<A_Star_Node, vector<A_Star_Node>, cmp> astar_openlist;
 
 // Convert actual distance to index value
-// 实际距离转换为索引值
 math::Vec2d calc_xy_index(math::Vec2d pos)
 {
     math::Vec2d idx;
@@ -30,7 +24,6 @@ math::Vec2d calc_xy_index(math::Vec2d pos)
 }
 
 // Calculation of H value
-// h值的计算
 double calc_heuristic(math::Vec2d p1, math::Vec2d p2)
 {
     double h = abs(p2.x() - p1.x()) + abs(p2.y() - p1.y());
@@ -38,7 +31,6 @@ double calc_heuristic(math::Vec2d p1, math::Vec2d p2)
 }
 
 // Convert index value to actual distance
-// 索引值转换为实际距离
 math::Vec2d calc_grid_position(math::Vec2d idx)
 {
     math::Vec2d pos;
@@ -48,7 +40,6 @@ math::Vec2d calc_grid_position(math::Vec2d idx)
 }
 
 // Find extreme endpoint
-// 找到极值端点
 vector<math::Vec2d> extremum_node(math::Vec2d idx)
 {
     math::Vec2d pos;
@@ -93,7 +84,6 @@ vector<math::Vec2d> extremum_node(math::Vec2d idx)
 }
 
 // Design 01 map
-// 设计 01 地图
 vector<vector<vector<int>>> costmap(vector<vector<vector<int>>> obj_map_)
 {
     double minx;
@@ -147,7 +137,6 @@ A_star_path PlanAStarPath()
     priority_queue<A_Star_Node, vector<A_Star_Node>, cmp> tmp;
     astar_openlist = tmp;
     // Function initial settings
-    // 函数初始设置
     vector<math::Vec2d> motion(8);
     motion[0].set_x(1);
     motion[0].set_y(0);
@@ -205,7 +194,6 @@ A_star_path PlanAStarPath()
     double one_step = a_star_.simulation_step / a_star_.resolution_x;
     
     // Start planning
-    // 开始规划
     while (!astar_openlist.empty() && completeness_flag == false)
     {
         A_Star_Node cur_node = astar_openlist.top();
@@ -226,11 +214,9 @@ A_star_path PlanAStarPath()
             child_node.h = calc_heuristic(child_node.idx, goal_node.idx);
             child_node.f = child_node.g + a_star_.multiplier_H_for_A_star * child_node.h;
             // If the child node has been explored ever before, and it has been closed:
-            // 如果子节点以前被探测过，并且已经关闭：
             if (astar_map_[child_node.idx.x()][child_node.idx.y()].close == 1)
                 continue;
             // If the previously found parent of the child is not good enough, a change is to be made
-            // 如果之前找到的子节点的父节点不够好，就要做出改变
             if (astar_map_[child_node.idx.x()][child_node.idx.y()].open == 1)
             {
                 if (astar_map_[child_node.idx.x()][child_node.idx.y()].f > child_node.f)
@@ -240,7 +226,6 @@ A_star_path PlanAStarPath()
                 continue;
             }
             // Now the child node is ensured to be newly expanded
-            // 现在，子节点被确保是新扩展的
             vector<math::Vec2d> Verify = extremum_node(child_node.idx);
             if (Verify[0].x() < 0 || (obj_map_[Verify[1].x()][Verify[1].y()][1] - obj_map_[Verify[1].x()][Verify[0].y() - 1][1] - obj_map_[Verify[0].x() - 1][Verify[1].y()][1] + obj_map_[Verify[0].x() - 1][Verify[0].y() - 1][1] > 0))
             {
@@ -249,12 +234,10 @@ A_star_path PlanAStarPath()
                 continue;
             }
             // Now the child node is both new and collision-free.
-            // 现在，子节点是新的且无冲突。
             child_node.open = 1;
             astar_openlist.push(child_node);
             astar_map_[child_node.idx.x()][child_node.idx.y()] = child_node;
             // If child node is the goal node
-            // 如果子节点是目标节点
             if (child_node.idx.DistanceTo(goal_node.idx) < 2 * one_step)
             {
                 closest_node = child_node;

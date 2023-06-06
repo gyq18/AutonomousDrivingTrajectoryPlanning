@@ -1,7 +1,5 @@
 /*
- #  This is the template for cpp Source Codes of different trajectory
- #  planner in unstructured environments.The randomly generated obstacles are
- #  oriented in different directions.
+ #  Run this code to test D* lite.
  */
 #include <iostream>
 #include <math.h>

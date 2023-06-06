@@ -178,10 +178,49 @@ bool check_move(const StateLatticeGraph & graph, Position from_pos, int from_dir
             return false;
         }
 
+        // TODO: it seems I can check all obstacles in one time.
         if (checkObj_linev(from_loc, to_loc, *iter))
         {
             return false;
         }
+    }
+    return true;
+}
+
+bool check_move_polygen(const StateLatticeGraph & graph, Position from_pos, int from_direction, 
+    Position to_pos, int to_direction, double loc2pos_scale) 
+{
+    auto from_loc = pos2loc(from_pos, loc2pos_scale);
+    auto to_loc = pos2loc(to_pos, loc2pos_scale);
+
+    double scale_factor = 1.1;
+
+    auto iter = obstacles_.begin();
+    for(; iter < obstacles_.end(); iter++)
+    {   
+        auto start_poly = CreateVehiclePolygon(from_loc.x(), from_loc.y(), direction2theta(from_direction));
+        for (size_t i = 0; i < start_poly.size() - 1; i++)
+        {
+            auto point_a = (start_poly[i] - from_loc) * scale_factor + from_loc;
+            auto point_b = (start_poly[i+1] - from_loc) * scale_factor + from_loc;
+            if (checkObj_linev(point_a, point_b, *iter))
+            {
+                return false;
+            }
+        }
+
+        auto end_poly = CreateVehiclePolygon(to_loc.x(), to_loc.y(), direction2theta(to_direction));
+        for (size_t i = 0; i < start_poly.size() - 1; i++)
+        {
+            auto point_a = (end_poly[i] - to_loc) * scale_factor + to_loc;
+            auto point_b = (end_poly[i+1] - to_loc) * scale_factor + to_loc;
+            if (checkObj_linev(point_a, point_b, *iter))
+            {
+                return false;
+            }
+        }
+
+
     }
     return true;
 }
@@ -222,43 +261,170 @@ double hlut(const LUT & lut, const StateLatticeGraph & graph, Position start_pos
         return lut.look_up(start_direction, Position(delta_x, delta_y), end_direction);
     }
 
-    if (delta_x < edge_length && delta_y >= edge_length)
-    {
-        overflow_factor = (double)(delta_y + 1) / edge_length;
-        delta_x = (int)round((double)delta_x * edge_length / (delta_y + 1));
-        delta_y = edge_length;
-    }
-    else if (delta_x >= edge_length && delta_y < edge_length)
-    {
-        overflow_factor = (double)(delta_x + 1) / edge_length;
-        delta_y = (int)std::round((double)delta_y * edge_length / (delta_x + 1));
-        delta_x = edge_length;
-    }
-    else
-    {   
-        if (delta_x > delta_y)
-        {
-            overflow_factor = (double)(delta_x + 1) / (delta_y + 1);
-        }
-        else{
-            overflow_factor = (double)(delta_y + 1) / (delta_x + 1);
-        }
-        delta_x = std::min((int)std::round((double)edge_length * (delta_x + 1) / (delta_y + 1)), edge_length - 1);
-        delta_y = std::min((int)std::round((double)edge_length * (delta_y + 1) / (delta_x + 1)), edge_length - 1);
-    }
+    // use Euclidean distance to esitimate instead of using the following part
+    return std::hypot(delta_x, delta_y);
 
-    // return the estimation result
-    return lut.look_up(start_direction, Position(delta_x, delta_y), end_direction) * overflow_factor;
+    // What the hell? This estimation seems to be Counterproductive to searching...
+    // if (delta_x < edge_length && delta_y >= edge_length)
+    // {
+    //     overflow_factor = (double)(delta_y + 1) / edge_length;
+    //     delta_x = (int)round((double)delta_x * edge_length / (delta_y + 1));
+    //     delta_y = edge_length;
+    // }
+    // else if (delta_x >= edge_length && delta_y < edge_length)
+    // {
+    //     overflow_factor = (double)(delta_x + 1) / edge_length;
+    //     delta_y = (int)std::round((double)delta_y * edge_length / (delta_x + 1));
+    //     delta_x = edge_length;
+    // }
+    // else
+    // {   
+    //     if (delta_x > delta_y)
+    //     {
+    //         overflow_factor = (double)(delta_x + 1) / (delta_y + 1);
+    //         decltype(delta_y) temp_delta_y = (int)((double)(edge_length-1) * (delta_y + 1) / (delta_x + 1));
+    //         delta_x = edge_length-1;
+    //         delta_y = temp_delta_y;
+    //     }
+    //     else{
+    //         overflow_factor = (double)(delta_y + 1) / (delta_x + 1);
+    //         decltype(delta_x) temp_delta_x = (int)((double)(edge_length-1) * (delta_x + 1) / (delta_y + 1));
+    //         delta_x = temp_delta_x;
+    //         delta_y = edge_length - 1;
+    //     }
+    // }
+
+    // // return the estimation result
+    // return lut.look_up(start_direction, Position(delta_x, delta_y), end_direction) * overflow_factor;
+}
+
+void path_interpolation(PlanningResult & result, const vector<pair<Position, int>>& path_result_list,
+    const ActionSet & action_set, double loc2pos_scale)
+{
+    // add more points to make trajectory smooth
+    auto iter = path_result_list.begin();
+    vector<vector<double>> theta_full;
+    for(; iter < path_result_list.end() - 1; iter++)
+    {   
+        auto start_pos = iter->first;
+        auto start_direction = iter->second;
+        auto end_pos = (iter+1)->first;
+        auto end_direction = (iter+1)->second;
+        auto points_result = action_set.sample_points(start_pos, start_direction, end_pos, end_direction);
+        
+        // convert position to absolute location
+        auto temp_x_result = points_result.first.first;
+        auto temp_y_result = points_result.first.second;
+        auto x_len = temp_x_result.size();
+        for (int i = 0; i < x_len; i++)
+        {
+            auto temp_x = temp_x_result[i] * loc2pos_scale + planning_scale_.xmin;
+            result.x.push_back(temp_x);
+        }
+
+        for (int i = 0; i < x_len; i++)
+        {
+            auto temp_y = temp_y_result[i] * loc2pos_scale + planning_scale_.ymin;
+            result.y.push_back(temp_y);
+        }
+        auto temp_theta_result = points_result.second;
+        result.theta.insert(result.theta.end(), temp_theta_result.begin(), temp_theta_result.end());
+    }
 }
 
 
-PlanningResult SimpleStateLatticePlan(double loc2pos_scale, string lut_file, string action_file, string insert_points_file)
+PlanningResult SimpleStateLatticePlan(double loc2pos_scale, string lut_file, string insert_points_file)
 {
     // process scaling. this will define how big is the graph.
-    double graph_width = planning_scale_.x_scale;
-    double graph_height = planning_scale_.y_scale;
+    double graph_width = planning_scale_.x_scale();
+    double graph_height = planning_scale_.y_scale();
     auto action_set = ActionSet();
-    action_set.load_data(action_file, insert_points_file);
+    action_set.load_data(insert_points_file);
+    auto graph = StateLatticeGraph((int)(graph_width / loc2pos_scale), (int)(graph_height / loc2pos_scale), action_set);
+
+    Vec2d start_loc = Vec2d(vehicle_TPBV_.x0, vehicle_TPBV_.y0);
+    int start_direction = theta2direction(vehicle_TPBV_.theta0);
+    Vec2d end_loc = Vec2d(vehicle_TPBV_.xtf, vehicle_TPBV_.ytf);
+    int end_direction = theta2direction(vehicle_TPBV_.thetatf);
+
+    // convert loc to pos
+    Position start_pos = loc2pos(start_loc, loc2pos_scale);
+    Position end_pos = loc2pos(end_loc, loc2pos_scale);
+
+    NodeIndex start_index = graph.position2index(start_pos, start_direction);
+    NodeIndex end_index = graph.position2index(end_pos, end_direction);
+
+    LUT lut;
+    lut.load_LUT(lut_file);
+
+    // In C++, lambda function with variables captured can not be 
+    // cast to a function pointer.
+    // I have to use std::function to pass the closures.
+    std::function<double(const StateLatticeGraph &, Position, int, Position, int)> heuristic_func = 
+    [&](const StateLatticeGraph & g, Position s_p, int s_d, Position e_p, int e_d) 
+    {
+        // static int call_times = 0;
+        // call_times++;
+        // cout << "call hlut: " << call_times << endl;
+        return hlut(lut, g, s_p, s_d, e_p, e_d);
+    };
+    std::function<bool(const StateLatticeGraph &, Position, int, Position, int)> position_check = 
+    [&](const StateLatticeGraph & g, Position s_p, int s_d, Position e_p, int e_d)
+    {
+        return check_move_polygen(g, s_p, s_d, e_p, e_d, loc2pos_scale);
+    };
+
+    auto start_time = chrono::high_resolution_clock::now();
+    auto astar_result = Astar(graph, start_pos, start_direction, end_pos, end_direction, heuristic_func, position_check);
+    auto end_time = chrono::high_resolution_clock::now();
+    std::cout << "Astar time consumed: " << 
+        chrono::duration_cast<chrono::microseconds>(end_time - start_time).count() <<
+        " us"
+        << std::endl;
+    auto g_score = astar_result.first;
+    auto path = astar_result.second;
+
+    vector<pair<Position, int>> temp_result_list;
+
+    // construct the path from start to end.
+    auto current_index = end_index;
+    if (path[current_index] == -1)
+    {
+        return PlanningResult();
+    }
+    while(path[current_index] != -1)
+    {
+        temp_result_list.push_back(graph.index2position(current_index));
+        current_index = path[current_index];
+    }
+    temp_result_list.push_back(graph.index2position(start_index));
+    // reverse the path 
+    std::reverse(temp_result_list.begin(), temp_result_list.end());
+    cout<< temp_result_list.size() <<endl;
+
+    PlanningResult result;
+
+    path_interpolation(result, temp_result_list, action_set, loc2pos_scale);
+
+    
+    result.path_length = g_score[end_index] * loc2pos_scale;
+    result.is_complete = 1;
+    auto end_time2 = chrono::high_resolution_clock::now();
+        std::cout << "Astar+interpolation time consumed: " << 
+        chrono::duration_cast<chrono::microseconds>(end_time2 - start_time).count() <<
+        " us"
+        << std::endl;
+    return result;
+}
+
+
+std::pair<double, double> SimpleStateLatticePlanBenchmarking(double loc2pos_scale, string lut_file, string insert_points_file, int times)
+{
+    // process scaling. this will define how big is the graph.
+    double graph_width = planning_scale_.x_scale();
+    double graph_height = planning_scale_.y_scale();
+    auto action_set = ActionSet();
+    action_set.load_data(insert_points_file);
     auto graph = StateLatticeGraph((int)(graph_width / loc2pos_scale), (int)(graph_height / loc2pos_scale), action_set);
 
     Vec2d start_loc = Vec2d(vehicle_TPBV_.x0, vehicle_TPBV_.y0);
@@ -290,66 +456,54 @@ PlanningResult SimpleStateLatticePlan(double loc2pos_scale, string lut_file, str
         return check_move(g, s_p, s_d, e_p, e_d, loc2pos_scale);
     };
 
-    auto start_time = chrono::high_resolution_clock::now();
-    auto astar_result = Astar(graph, start_pos, start_direction, end_pos, end_direction, heuristic_func, position_check);
-    auto end_time = chrono::high_resolution_clock::now();
-    std::cout << "Astar time consumed: " << 
-        chrono::duration_cast<chrono::microseconds>(end_time - start_time).count() <<
-        " us"
-        << std::endl;
-    auto g_score = astar_result.first;
-    auto path = astar_result.second;
 
-    vector<pair<Position, int>> temp_result_list;
 
-    // construct the path from start to end.
-    auto current_index = end_index;
-    if (path[current_index] == -1)
+    double Astar_time = 0;
+    double Astar_interp_time = 0;
+    int valid_times = 0;
+    for(int k = 0; k < times; k++)
     {
-        return PlanningResult();
-    }
-    while(path[current_index] != -1)
-    {
-        temp_result_list.push_back(graph.index2position(current_index));
-        current_index = path[current_index];
-    }
-    temp_result_list.push_back(graph.index2position(start_index));
-    // reverse the path 
-    reverse(temp_result_list.begin(), temp_result_list.end());
+        // generate obstacles
+        auto now = chrono::high_resolution_clock::now();
+        srand(now.time_since_epoch().count());
+        obstacles_ = GenerateStaticObstacles_unstructured();
 
-    PlanningResult result;
+        auto start_time = chrono::high_resolution_clock::now();
+        auto astar_result = Astar(graph, start_pos, start_direction, end_pos, end_direction, heuristic_func, position_check);
+        auto end_time = chrono::high_resolution_clock::now();
+        Astar_time += chrono::duration_cast<chrono::microseconds>(end_time - start_time).count();
+            
+        auto g_score = astar_result.first;
+        auto path = astar_result.second;
 
-    // add more points to make trajectory smooth
-    auto iter = temp_result_list.begin();
-    vector<vector<double>> theta_full;
-    for(; iter < temp_result_list.end() - 1; iter++)
-    {   
-        auto start_pos = iter->first;
-        auto start_direction = iter->second;
-        auto end_pos = (iter+1)->first;
-        auto end_direction = (iter+1)->second;
-        auto points_result = action_set.sample_points(start_pos, start_direction, end_pos, end_direction);
-        // cout << "(" << start_pos.x() << ", " << start_pos.y() << ", " << start_direction << ")" << endl;
-        // continue;
-        
-        // convert position to absolute location
-        auto temp_x_result = points_result.first.first;
-        auto temp_y_result = points_result.first.second;
-        auto x_len = temp_x_result.size();
-        for (int i = 0; i < x_len; i++)
+        vector<pair<Position, int>> temp_result_list;
+
+        // construct the path from start to end.
+        auto current_index = end_index;
+        if (path[current_index] == -1)
         {
-            Vec2d temp_pos = Vec2d(temp_x_result[i], temp_y_result[i]);
-            Vec2d loc_res = pos2loc(temp_pos, loc2pos_scale);
-            result.x.push_back(loc_res.x());
-            result.y.push_back(loc_res.y());
+            continue;
         }
-        auto temp_theta_result = points_result.second;
-        result.theta.insert(result.theta.end(), temp_theta_result.begin(), temp_theta_result.end());
+        while(path[current_index] != -1)
+        {
+            temp_result_list.push_back(graph.index2position(current_index));
+            current_index = path[current_index];
+        }
+        temp_result_list.push_back(graph.index2position(start_index));
+        // reverse the path 
+        std::reverse(temp_result_list.begin(), temp_result_list.end());
+
+        PlanningResult result;
+
+        path_interpolation(result, temp_result_list, action_set, loc2pos_scale);
+
+        
+        result.path_length = g_score[end_index] * loc2pos_scale;
+        result.is_complete = 1;
+        auto end_time2 = chrono::high_resolution_clock::now();
+        Astar_interp_time += chrono::duration_cast<chrono::microseconds>(end_time2 - start_time).count();   
+        valid_times ++;
     }
-
     
-    result.path_length = g_score[end_index] * loc2pos_scale;
-    result.is_complete = 1;
-
-    return result;
+    return make_pair(Astar_time / valid_times, Astar_interp_time / valid_times);
 }

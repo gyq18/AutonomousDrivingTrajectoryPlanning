@@ -1,7 +1,5 @@
 """
-
-参考工程https://github.com/AtsushiSakai/PythonRobotics/tree/master/PathPlanning/AStar
-
+https://github.com/AtsushiSakai/PythonRobotics/tree/master/PathPlanning/AStar
 """
 
 import math
@@ -21,8 +19,8 @@ from globalvar import hybrid_astar_Set
 from main_unstructure import CreateVehiclePolygon
 
 
-from AABB import Vehicle_Allobj_AABB_Collision
-from Circumscribed_circle import Vehicle_Allobj_Circumscribed_Circle_Collision
+from CheckByAABB import Vehicle_Allobj_AABB_Collision
+from CheckByCircle import Vehicle_Allobj_Circumscribed_Circle_Collision
 
 global astar_
 astar_ = hybrid_astar_Set()
@@ -49,9 +47,6 @@ def get_motion_model():
 
     return motion
 
-# 实际到索引
-
-
 def calc_xy_index(position, dim):
     if(dim == 0):
         pos = math.ceil(position / astar_.resolution_x)
@@ -68,8 +63,6 @@ def calc_heuristic(n1, n2):
     w = 1.0  # weight of heuristic
     d = w * math.hypot(n1.x - n2.x, n1.y - n2.y)
     return d
-
-# 索引转实际
 
 
 def calc_grid_position(index, dim):
@@ -214,7 +207,7 @@ def PlanAStarPath():
             theta.reverse()
             print(path_length)
             return [x, y, theta, path_length, completeness_flag]
-        # id是转换后的坐标，node是键值
+        # id is the transformed coordinate, node is the key value
         c_id = min(
             open_set, key=lambda o: open_set[o].cost + calc_heuristic(goal_node, open_set[o]))
         current = open_set[c_id]

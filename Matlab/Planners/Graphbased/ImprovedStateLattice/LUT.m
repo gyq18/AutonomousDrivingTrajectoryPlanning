@@ -14,7 +14,8 @@ classdef LUT
             %   filename: the filename of lookup table
             obj.direction_num = 8;
             file = fopen(filename);
-            C = textscan(file, "%s", Delimiter='\n');
+            C = textscan(file, "%s", 'Delimiter','\n');
+%             C = textscan(file, "%s", Delimiter='\n');
             data_str = char(C{1});
             json_obj = jsondecode(data_str);
             obj.edge_length = json_obj.edge_length;

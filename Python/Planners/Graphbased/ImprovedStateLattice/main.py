@@ -1,17 +1,9 @@
-#%%
+# ==============================================================================
+# ==============================================================================
 #  This is the template for python Source Codes of different trajectory
 #  planner in unstructured environments. The randomly generated obstacles are
 #  oriented in different directions.
-#  
-#  
 # ==============================================================================
-# ==============================================================================
-#  The core part of your written planner.
-#  Please add the code for the relevant method you are responsible for and make sure that the whole program runs smoothly.
-# ==============================================================================
-# Your planner includes these parts:
-#
-#
 # ==============================================================================
 import math
 from joblib import parallel_backend

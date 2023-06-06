@@ -5,7 +5,7 @@
 using namespace cv;
 using namespace std;
 
-void DrawCircle(Mat img,Point place, int radius=2,int t=0)
+void DrawCircle(Mat img, Point place, int radius=2, int t=0)
 {   
     if (t == 0) {
         circle(img, place, radius, Scalar(14, 201, 255), -1);

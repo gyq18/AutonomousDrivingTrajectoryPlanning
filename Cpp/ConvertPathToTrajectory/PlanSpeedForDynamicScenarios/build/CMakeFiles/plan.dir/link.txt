@@ -1,0 +1,2 @@
+/usr/bin/ar qc libplan.a  CMakeFiles/plan.dir/PlanSpeedForDynamicScenarios.cpp.o
+/usr/bin/ranlib libplan.a

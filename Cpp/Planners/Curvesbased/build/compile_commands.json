@@ -1,0 +1,37 @@
+[
+{
+  "directory": "C:/Users/HP/projects/PathPlanning/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -IC:/Users/HP/projects/PathPlanning/./include -IC:/Users/HP/projects/PathPlanning/./3rdParty/Mosek/9.3/tools/platform/win64x86/h -isystem C:/msys64/mingw64/include/opencv4 -isystem C:/msys64/mingw64/include/eigen3 -O3 -DNDEBUG -o CMakeFiles\\PathPlanning.dir\\src\\bezier.cpp.obj -c C:\\Users\\HP\\projects\\PathPlanning\\src\\bezier.cpp",
+  "file": "C:\\Users\\HP\\projects\\PathPlanning\\src\\bezier.cpp"
+},
+{
+  "directory": "C:/Users/HP/projects/PathPlanning/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -IC:/Users/HP/projects/PathPlanning/./include -IC:/Users/HP/projects/PathPlanning/./3rdParty/Mosek/9.3/tools/platform/win64x86/h -isystem C:/msys64/mingw64/include/opencv4 -isystem C:/msys64/mingw64/include/eigen3 -O3 -DNDEBUG -o CMakeFiles\\PathPlanning.dir\\src\\mathstruct.cpp.obj -c C:\\Users\\HP\\projects\\PathPlanning\\src\\mathstruct.cpp",
+  "file": "C:\\Users\\HP\\projects\\PathPlanning\\src\\mathstruct.cpp"
+},
+{
+  "directory": "C:/Users/HP/projects/PathPlanning/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -IC:/Users/HP/projects/PathPlanning/./include -IC:/Users/HP/projects/PathPlanning/./3rdParty/Mosek/9.3/tools/platform/win64x86/h -isystem C:/msys64/mingw64/include/opencv4 -isystem C:/msys64/mingw64/include/eigen3 -O3 -DNDEBUG -o CMakeFiles\\PathPlanning.dir\\src\\PlanPRMPath.cpp.obj -c C:\\Users\\HP\\projects\\PathPlanning\\src\\PlanPRMPath.cpp",
+  "file": "C:\\Users\\HP\\projects\\PathPlanning\\src\\PlanPRMPath.cpp"
+},
+{
+  "directory": "C:/Users/HP/projects/PathPlanning/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -IC:/Users/HP/projects/PathPlanning/./include -IC:/Users/HP/projects/PathPlanning/./3rdParty/Mosek/9.3/tools/platform/win64x86/h -isystem C:/msys64/mingw64/include/opencv4 -isystem C:/msys64/mingw64/include/eigen3 -O3 -DNDEBUG -o CMakeFiles\\PathPlanning.dir\\src\\TransformP2T.cpp.obj -c C:\\Users\\HP\\projects\\PathPlanning\\src\\TransformP2T.cpp",
+  "file": "C:\\Users\\HP\\projects\\PathPlanning\\src\\TransformP2T.cpp"
+},
+{
+  "directory": "C:/Users/HP/projects/PathPlanning/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -IC:/Users/HP/projects/PathPlanning/./include -IC:/Users/HP/projects/PathPlanning/./3rdParty/Mosek/9.3/tools/platform/win64x86/h -isystem C:/msys64/mingw64/include/opencv4 -isystem C:/msys64/mingw64/include/eigen3 -O3 -DNDEBUG -o CMakeFiles\\PathPlanning.dir\\src\\vec2d.cpp.obj -c C:\\Users\\HP\\projects\\PathPlanning\\src\\vec2d.cpp",
+  "file": "C:\\Users\\HP\\projects\\PathPlanning\\src\\vec2d.cpp"
+},
+{
+  "directory": "C:/Users/HP/projects/PathPlanning/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -IC:/Users/HP/projects/PathPlanning/./include -IC:/Users/HP/projects/PathPlanning/./3rdParty/Mosek/9.3/tools/platform/win64x86/h -isystem C:/msys64/mingw64/include/opencv4 -isystem C:/msys64/mingw64/include/eigen3 -O3 -DNDEBUG -o CMakeFiles\\PathPlanning.dir\\src\\Visualize.cpp.obj -c C:\\Users\\HP\\projects\\PathPlanning\\src\\Visualize.cpp",
+  "file": "C:\\Users\\HP\\projects\\PathPlanning\\src\\Visualize.cpp"
+},
+{
+  "directory": "C:/Users/HP/projects/PathPlanning/build",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -IC:/Users/HP/projects/PathPlanning/./include -IC:/Users/HP/projects/PathPlanning/./3rdParty/Mosek/9.3/tools/platform/win64x86/h -isystem C:/msys64/mingw64/include/opencv4 -isystem C:/msys64/mingw64/include/eigen3 -O3 -DNDEBUG -o CMakeFiles\\PathPlanning.dir\\main.cpp.obj -c C:\\Users\\HP\\projects\\PathPlanning\\main.cpp",
+  "file": "C:\\Users\\HP\\projects\\PathPlanning\\main.cpp"
+}
+]

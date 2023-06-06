@@ -1,0 +1,42 @@
+[
+{
+  "directory": "/home/gyq/Projects/Dynamic/cpp code/build",
+  "command": "/usr/bin/g++   -isystem /usr/local/include/opencv4 -I\"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp\" -I\"/home/gyq/Projects/Dynamic/cpp code/eigen-3.4.0\" -I/opt/ibm/ILOG/CPLEX_Studio221/cplex/include -I/opt/ibm/ILOG/CPLEX_Studio221/concert/include  -g   -std=gnu++1z -o CMakeFiles/plan.dir/PlanSpeedForDynamicScenarios.cpp.o -c \"/home/gyq/Projects/Dynamic/cpp code/PlanSpeedForDynamicScenarios.cpp\"",
+  "file": "/home/gyq/Projects/Dynamic/cpp code/PlanSpeedForDynamicScenarios.cpp"
+},
+{
+  "directory": "/home/gyq/Projects/Dynamic/cpp code/build",
+  "command": "/usr/bin/g++   -isystem /usr/local/include/opencv4 -I\"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp\" -I\"/home/gyq/Projects/Dynamic/cpp code/eigen-3.4.0\" -I/opt/ibm/ILOG/CPLEX_Studio221/cplex/include -I/opt/ibm/ILOG/CPLEX_Studio221/concert/include  -g   -std=gnu++1z -o CMakeFiles/main.dir/main.cpp.o -c \"/home/gyq/Projects/Dynamic/cpp code/main.cpp\"",
+  "file": "/home/gyq/Projects/Dynamic/cpp code/main.cpp"
+},
+{
+  "directory": "/home/gyq/Projects/Dynamic/cpp code/build",
+  "command": "/usr/bin/g++   -isystem /usr/local/include/opencv4 -I\"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp\" -I\"/home/gyq/Projects/Dynamic/cpp code/eigen-3.4.0\" -I/opt/ibm/ILOG/CPLEX_Studio221/cplex/include -I/opt/ibm/ILOG/CPLEX_Studio221/concert/include  -g   -std=gnu++1z -o CMakeFiles/main.dir/GenerateDynamicObstacles_unstructured.cpp.o -c \"/home/gyq/Projects/Dynamic/cpp code/GenerateDynamicObstacles_unstructured.cpp\"",
+  "file": "/home/gyq/Projects/Dynamic/cpp code/GenerateDynamicObstacles_unstructured.cpp"
+},
+{
+  "directory": "/home/gyq/Projects/Dynamic/cpp code/build",
+  "command": "/usr/bin/g++   -isystem /usr/local/include/opencv4 -I\"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp\" -I\"/home/gyq/Projects/Dynamic/cpp code/eigen-3.4.0\" -I/opt/ibm/ILOG/CPLEX_Studio221/cplex/include -I/opt/ibm/ILOG/CPLEX_Studio221/concert/include  -g   -std=gnu++1z -o CMakeFiles/main.dir/statelatticecpp/Visualize.cpp.o -c \"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/Visualize.cpp\"",
+  "file": "/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/Visualize.cpp"
+},
+{
+  "directory": "/home/gyq/Projects/Dynamic/cpp code/build",
+  "command": "/usr/bin/g++   -isystem /usr/local/include/opencv4 -I\"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp\" -I\"/home/gyq/Projects/Dynamic/cpp code/eigen-3.4.0\" -I/opt/ibm/ILOG/CPLEX_Studio221/cplex/include -I/opt/ibm/ILOG/CPLEX_Studio221/concert/include  -g   -std=gnu++1z -o CMakeFiles/main.dir/statelatticecpp/vec2d.cpp.o -c \"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/vec2d.cpp\"",
+  "file": "/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/vec2d.cpp"
+},
+{
+  "directory": "/home/gyq/Projects/Dynamic/cpp code/build",
+  "command": "/usr/bin/g++   -isystem /usr/local/include/opencv4 -I\"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp\" -I\"/home/gyq/Projects/Dynamic/cpp code/eigen-3.4.0\" -I/opt/ibm/ILOG/CPLEX_Studio221/cplex/include -I/opt/ibm/ILOG/CPLEX_Studio221/concert/include  -g   -std=gnu++1z -o CMakeFiles/main.dir/statelatticecpp/state_lattice.cpp.o -c \"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/state_lattice.cpp\"",
+  "file": "/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/state_lattice.cpp"
+},
+{
+  "directory": "/home/gyq/Projects/Dynamic/cpp code/build",
+  "command": "/usr/bin/g++   -isystem /usr/local/include/opencv4 -I\"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp\" -I\"/home/gyq/Projects/Dynamic/cpp code/eigen-3.4.0\" -I/opt/ibm/ILOG/CPLEX_Studio221/cplex/include -I/opt/ibm/ILOG/CPLEX_Studio221/concert/include  -g   -std=gnu++1z -o CMakeFiles/main.dir/statelatticecpp/state_lattice_planner.cpp.o -c \"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/state_lattice_planner.cpp\"",
+  "file": "/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/state_lattice_planner.cpp"
+},
+{
+  "directory": "/home/gyq/Projects/Dynamic/cpp code/build",
+  "command": "/usr/bin/g++   -isystem /usr/local/include/opencv4 -I\"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp\" -I\"/home/gyq/Projects/Dynamic/cpp code/eigen-3.4.0\" -I/opt/ibm/ILOG/CPLEX_Studio221/cplex/include -I/opt/ibm/ILOG/CPLEX_Studio221/concert/include  -g   -std=gnu++1z -o CMakeFiles/main.dir/statelatticecpp/mathstruct.cpp.o -c \"/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/mathstruct.cpp\"",
+  "file": "/home/gyq/Projects/Dynamic/cpp code/statelatticecpp/mathstruct.cpp"
+}
+]

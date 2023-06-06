@@ -1,6 +1,6 @@
 function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_choice)
     %% Nonlinear kinematics equations are not treated, and the vehicle is covered with a circle
-    % input: initialguess优化求解时需要一个初始猜测，此可由A*找到的路径提供；
+    % input: initialguess is required for optimal solution, this can be provided by the path found by A*.
     % collision_choice： 1-convex feasible set (CFS); 2-box;
     % output:
     % trajectory.x,trajectory.y,trajectory.theta,trajectory.v,trajectory.phi
@@ -17,8 +17,8 @@ function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_ch
         obj = [obj; obstacles_{i}.x; obstacles_{i}.y];
     end
 
-    %% 对求解器赋初值
-    nstep = length(initialguess.x); % nstep=离散点的个数
+    % Assign initial value to solver
+    nstep = length(initialguess.x); 
     tf0 = nstep;
     refpath_vec = zeros(2 * nstep, 1);
     refpath_vec(1:2:end) = initialguess.x';
@@ -28,38 +28,34 @@ function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_ch
     phi0 = initialguess.phi'; phi = phi0;
     x0 = [refpath_vec; theta0; v0; phi0; tf0];
     path_k = refpath_vec;
-    Ts = x0(5 * nstep + 1) / (nstep - 1); %采样时间delta_t
+    Ts = x0(5 * nstep + 1) / (nstep - 1); %delta_t
 
-    % 决策变量数量
+ 
     dim = 2;
-    num_dv = nstep * 5 + 1; %小车中心位置xn(2*nstep),theta(nstep),v(nstep),phi(nstep),tf(1)
-    % 避障约束最大数量
+    num_dv = nstep * 5 + 1; %xn(2*nstep),theta(nstep),v(nstep),phi(nstep),tf(1)
+ 
     num_collision_max = nstep * nobj;
 
-    %% 离散化的运动学方程
     Apdyn = zeros(nstep - 1, dim * nstep);
     Aqdyn = zeros(nstep - 1, dim * nstep);
     Athetadyn = zeros(nstep - 1, nstep);
 
-    %% 离散的代数状态方程
     Av1 = zeros(nstep - 1, num_dv);
     Av2 = zeros(nstep - 1, num_dv);
     Aphi1 = zeros(nstep - 1, num_dv);
     Aphi2 = zeros(nstep - 1, num_dv);
 
-    %% 新的
     Obj1 = zeros(nstep - 1, num_dv);
     Obj2 = zeros(nstep - 1, num_dv);
 
     for k = 1:nstep - 1
-        %% 目标函数
         Obj1(k, 3 * nstep + k:3 * nstep + k + 1) = [-1, 1];
         Obj2(k, 4 * nstep + k:4 * nstep + k + 1) = [-1, 1];
-        %% 离散化的运动学方程
+   
         Apdyn(k, 2 * k - 1:2 * k + 1) = [-1, 0, 1];
         Aqdyn(k, 2 * k:2 * k + 2) = [-1, 0, 1];
         Athetadyn(k, k:k + 1) = [-1, 1];
-        %% 离散的代数状态方程
+  
         index1 = [3 * nstep + k:3 * nstep + k + 1, num_dv];
         index2 = [4 * nstep + k:4 * nstep + k + 1, num_dv];
         Av1(k, index1) = [-1, 1, -vehicle_kinematics_.vehicle_a_max / (nstep - 1)];
@@ -68,14 +64,14 @@ function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_ch
         Aphi2(k, index2) = [1, -1, -vehicle_kinematics_.vehicle_omega_max / (nstep - 1)];
     end
 
-    %% 目标函数的一次项
+ 
     f = zeros(num_dv, 1);
-    f(end) = 1; %使时间最小
-    % 目标函数的二次项
+    f(end) = 1; % Minimize time
+  
     H = 2 * (Obj1' * Obj1 + Obj2' * Obj2);
     H_x = 2 * (Obj1(:, 1:num_dv)' * Obj1(:, 1:num_dv) + Obj2(:, 1:num_dv)' * Obj2(:, 1:num_dv));
 
-    %% 等式约束：限制轨迹的起止状态x,y,theta,v,phi
+    %% Equation constraint: constrains the starting and ending states of the trajectory x,y,theta,v,phi
     Aeq0 = zeros(10, num_dv);
     beq0 = zeros(10, 1); %[refpath_vec(1);refpath_vec(2);refpath_vec(nstep*dim-1);refpath_vec(nstep*dim);refpath_vec(3)-refpath_vec(1);refpath_vec(4)-refpath_vec(2);refpath_vec(end-1)-refpath_vec(end-3);refpath_vec(end)-refpath_vec(end-2)];
     Aeq0(1:2, 1:2) = eye(2); %initial_x;initial_y
@@ -95,51 +91,51 @@ function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_ch
     beq0(9) = vehicle_TPBV_.phi0;
     beq0(10) = vehicle_TPBV_.phitf;
 
-    %% 边界条件约束
+    %% Boundary condition constraints
     lb = zeros(num_dv, 1);
     ub = zeros(num_dv, 1);
-    % 轨迹横纵坐标的范围限制
+    % Range limits for trajectory horizontal and vertical coordinates
     lb(1:dim:dim * nstep) = planning_scale_.xmin;
     lb(2:dim:dim * nstep) = planning_scale_.ymin;
     ub(1:dim:dim * nstep) = planning_scale_.xmax;
     ub(2:dim:dim * nstep) = planning_scale_.ymax;
-    % theta的上下界（这里设置无穷大是为了防止在特殊场景下角度以2pi倍数增长）
+    % upper and lower bounds for theta 
     lb(2 * nstep + 1:3 * nstep) = -Inf;
     ub(2 * nstep + 1:3 * nstep) = Inf;
-    % v的上下界
+    % Upper and lower bounds of v
     lb(3 * nstep + 1:4 * nstep) = vehicle_kinematics_.vehicle_v_min;
     ub(3 * nstep + 1:4 * nstep) = vehicle_kinematics_.vehicle_v_max;
-    % phi的上下界
+    % Upper and lower boundaries of phi
     lb(4 * nstep + 1:5 * nstep) = vehicle_kinematics_.vehicle_phi_min;
     ub(4 * nstep + 1:5 * nstep) = vehicle_kinematics_.vehicle_phi_max;
-    % 行驶时间的上下界
+    % Upper and lower boundaries of travel time
     lb(5 * nstep + 1) = 0;
     ub(5 * nstep + 1) = 1000;
-    % 等式惩罚
+    % Equation penalties
     lb(num_dv + 1:end) = 0; %lb(num_dv+1:end)=-inf;
     ub(num_dv + 1:end) = inf;
 
-%     % 计算x0的运动学约束满足情况
+
 %     F_x0 = [Apdyn * x0(1:2 * nstep) - Ts * vel(1:nstep - 1) .* cos(theta(1:nstep - 1)); Aqdyn * x0(1:2 * nstep) - Ts * vel(1:nstep - 1) .* sin(theta(1:nstep - 1)); Athetadyn * theta(1:nstep) - Ts / Lm * vel(1:nstep - 1) .* tan(phi(1:nstep - 1))];
 
 
-    %% 开始迭代
+    %% Start of iteration
     maxiter = 20;
     for k = 1:maxiter
-        %% 避障约束
+       % Obstacle avoidance constraints
         A = zeros(num_collision_max, num_dv);
         b = zeros(num_collision_max, 1);
-        %% 避障约束
-        counter_collision = 1; %统计避障约束的数量
-        % 对于每一个时刻进行迭代
+
+        counter_collision = 1; 
+   
         for i = 1:nstep
             indexi = (i - 1) * dim + 1:i * dim;
-            xnr = path_k(indexi); % xnr是列向量
-            % 为xnr计算凸可行集
+            xnr = path_k(indexi); % xnr is a column vector
+            % Compute the convex feasible set for xnr
             if collision_choice == 1
-                [tempA, tempb] = Find_Box_for_all_obj(xnr);
+                [tempA, tempb] = FindBox(xnr);
             elseif collision_choice == 2
-                [tempA, tempb, ~] = Find_CFS_for_all_obj(xnr, obj);
+                [tempA, tempb, ~] = FindCFS(xnr, obj);
             end
 
             num_tempA = length(tempb);
@@ -152,7 +148,6 @@ function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_ch
             end
 
             counter_collision = counter_collision + num_tempA;
-            % 计算其他圆心xir的凸可行集约束，并将其转换到决策变量xr和xnr的线性约束
         end
 
         num_collision = counter_collision - 1;
@@ -160,7 +155,7 @@ function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_ch
         Aineq = zeros(num_constraint, num_dv);
         bineq = zeros(num_constraint, 1);
 
-        %% 外循环是CFS的循环，内循环是针对固定的凸可行集进行优化的循环
+        %% Outer loops are CFS loops, inner loops are loops optimized for a fixed convex feasible set
         Aineq(1:num_collision, :) = A(1:num_collision, :);
         Aineq(num_collision + 1:num_collision + nstep - 1, :) = Av1;
         Aineq(num_collision + nstep:num_collision + 2 * (nstep - 1), :) = Av2;
@@ -169,7 +164,7 @@ function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_ch
 
         bineq(1:num_collision) = b(1:num_collision);
 
-        x_last = x0; % 保存上一次的解
+        x_last = x0;
         
         fun = @(x)1/2 * x' * H_x * x + f' * x;
         nonlcon = @(x)kinematiccon(x, nstep, Apdyn, Aqdyn, Athetadyn, Lm);
@@ -189,7 +184,7 @@ function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_ch
     end
 
 
-    %% 判断迭代maxiter次找到的轨迹是否满足运动学约束和避障约束（是否真正找到可行解）
+    %% Determine whether the trajectory found in maxiter iterations satisfies the kinematic and obstacle avoidance constraints (whether a feasible solution is actually found)
     if isFeasible
         if sum(lb - x) <= 0 && sum(x - ub) <= 0 && sum(Aineq * x - bineq) <= 0 && sum(abs(Aeq0 * x - beq0)) <= 0.1
             isFeasible = 1;
@@ -198,7 +193,7 @@ function [trajectory, isFeasible] = PlanSCPTrajectory(initialguess, collision_ch
         end
     end
 
-    %% 再次对求得的解进行约束检查
+     %% Constraint checking of the resulting solution again
     if isFeasible == 1
         if norm(kinematiccon(x, nstep, Apdyn, Aqdyn, Athetadyn, Lm)) < 1e-3 && sum(lb(1:num_dv) - x) <= 0 ...
                 && sum(x - ub) <= 0 && sum(Aineq * x - bineq) <= 0 ...
@@ -228,9 +223,9 @@ function [c, ceq] = kinematiccon(x, nstep, Apdyn, Aqdyn, Athetadyn, Lm)
     ceq = [Apdyn * x(1:2 * nstep) - Ts * vel(1:nstep - 1) .* cos(theta(1:nstep - 1)); Aqdyn * x(1:2 * nstep) - Ts * vel(1:nstep - 1) .* sin(theta(1:nstep - 1)); Athetadyn * theta(1:nstep) - Ts / Lm * vel(1:nstep - 1) .* tan(phi(1:nstep - 1))];
 end
 
-%% 第一种处理碰撞约束的方法：Box
-function [A, b] = Find_Box_for_all_obj(xr)
-    % xr的大小2*1
+%% Find Box for all obstacles
+function [A, b] = FindBox(xr)
+     % xr:2*1, for the point
     [xc, yc] = SpinTrial(xr(1), xr(2));
     lb = GetAabbLength(xc, yc);
     bxmax = max(xc + lb(4), xc - lb(2)); bxmin = min(xc + lb(4), xc - lb(2));
@@ -378,22 +373,18 @@ function [A, b] = Find_Box_for_all_obj(xr)
 
 end
 
-%% 第二种处理碰撞约束的方法：CFS
-function [A, b, d] = Find_CFS_for_all_obj(xr, obstacle)
-    %% 针对障碍物所有obj，为当前参考点xr寻找凸可行集CFS：F(xr)
-    % xr的大小2*1，obj的大小2*4（每一列是一个顶点的坐标）
-    %% 首先确定函数phi：因为实例中的障碍物都是凸的，因此phi取为文献中的公式(23)
-    % 1. 需要注意的是，公式（23）所示的是phi是凸函数，并且光滑，因此次梯度集合为单点集，只包含一个元素——梯度
-    % 2. 此外我们需要寻找障碍物边界上距离xr最近的点：依次考虑各个相邻顶点
-    ncorner = size(obstacle, 2); %障碍物顶点个数
+%% Find CFS for all obstacles
+function [A, b, d] = FindCFS(xr, obstacle)
+    % the point xr:2*1, obstacle 2n*4
+    ncorner = size(obstacle, 2); %the number of vertices in the obstacles (4)
     nobj = size(obstacle, 1) / 2;
-    d = inf * ones(nobj, 1); % xr到障碍物的最小距离初始值设为无穷大
-    % 考虑所有的障碍物，得到的凸可行集(aTx<=b)保存在pre_A和pre_b中
+    d = inf * ones(nobj, 1); 
+    % (aTx<=b):pre_A,pre_b
     pre_A = zeros(nobj, 2);
     pre_b = zeros(nobj, 1);
     counter = 0;
-    index_true = ones(nobj, 1); % index_true(j)=0表示排除了第j条直线
-    %% 确定了函数phi之后，F(xr)为：phi(xr) + delta_phi(xr)*(x-xr)>=0
+    index_true = ones(nobj, 1); % index_true(j)=0 means the jth line is excluded
+    % After determining the function phi, F(xr) is: phi(xr) + delta_phi(xr)*(x-xr)>=0
     for j = 1:nobj
         counter = counter + 1;
         obj = obstacle(2 * j - 1:2 * j, :);
@@ -401,20 +392,21 @@ function [A, b, d] = Find_CFS_for_all_obj(xr, obstacle)
         for i = 1:ncorner
             corner1 = obj(:, i);
             corner2 = obj(:, mod(i, ncorner) + 1);
-            % xr,corner1以及corner2三点构成三角形，求三边的长度
+             % xr,corner1 and corner2 form a triangle and find the lengths of the three sides
             dist_r1 = norm(xr - corner1);
             dist_r2 = norm(xr - corner2);
             dist_12 = norm(corner1 - corner2);
-            % 若角r12为钝角，则此时xr距离corner1更近
-            if (dist_r1^2 + dist_12^2 - dist_r2^2) < -1e-4 %余弦定理
+            % If angle r12 is obtuse, then xr is closer to corner1 at this point
+            if (dist_r1^2 + dist_12^2 - dist_r2^2) < -1e-4 % Cosine Theorem
                 temp_d = dist_r1;
                 temp_A = xr' - corner1';
                 temp_b = temp_A * corner1;
-            elseif (dist_r2^2 + dist_12^2 - dist_r1^2) < -1e-4 % 若角r21为钝角，则此时xr距离corner2更近
+            elseif (dist_r2^2 + dist_12^2 - dist_r1^2) < -1e-4 % If angle r21 is obtuse, then xr is closer to corner2 at this point
                 temp_d = dist_r2;
                 temp_A = xr' - corner2';
                 temp_b = temp_A * corner2;
-            else % 若角r12以及角r21均为锐角，则xr到由corner1和corner2构成的直线段的垂线最短
+            else
+                % If angle r12 and angle r21 are both acute, then the vertical line from xr to the segment of the line formed by corner1 and corner2 is the shortest
                 project_length = (xr - corner1)' * (corner2 - corner1) / dist_12;
                 temp_d = sqrt(dist_r1^2 - project_length^2);
                 temp_A = [corner1(2) - corner2(2), corner2(1) - corner1(1)];
@@ -433,7 +425,7 @@ function [A, b, d] = Find_CFS_for_all_obj(xr, obstacle)
         single_A = single_A / length_A;
         single_b = single_b / length_A;
 
-        %     %% 离xr最近的顶点的对角点，与xr应该分居直线Ax=b的两侧
+        % the diagonal point of the vertex nearest to xr, which should be on either side of the line Ax = b with xr
         for kkk = 1:ncorner
 
             if single_A * obj(:, kkk) < single_b
@@ -449,8 +441,9 @@ function [A, b, d] = Find_CFS_for_all_obj(xr, obstacle)
 
     end
 
-    %% 看看是否pre_A和pre_b中是否有冗余约束
-    % 在上面，每一个障碍物都对应找了一条直线分割xr和障碍物本身。如果排除这条直线，剩下的直线仍然可以分割这个障碍物和xr,则这条直线确实可以从约束中排除
+    % See if there are redundant constraints in pre_A and pre_b
+    % Above, each obstacle corresponds to finding a straight line dividing xr and the obstacle itself. 
+    % If excluding this line leaves a line that still splits this obstacle and xr, then this line can indeed be excluded from the constraint
     for j = 1:nobj
         temp_index = index_true;
         temp_index(j) = 0;

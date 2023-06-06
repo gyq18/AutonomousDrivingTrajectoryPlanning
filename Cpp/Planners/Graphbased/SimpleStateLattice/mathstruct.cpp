@@ -112,40 +112,7 @@ bool checkObj_linev(math::Vec2d p1, math::Vec2d p2, vector<math::Vec2d> obj) {
             return 1;
         }
     }
-    //Diagonal2
-    c1 = obj[1];
-    c2 = obj[3];
-    v2 = c2 - c1;
-    norm_dist1 = (v2 - v1).Length();
-    norm_dist2 = (v2 + v1).Length();
-    if (norm_dist1 < 1e-06 || norm_dist2 < 1e-06) {
-        result = 0;
-    }
-    else {
-        // Calculate the intersection of two lines
-        double t1 = (v2.x() * (c1.x() - p1.x()) + v2.x() * (p1.y() - c1.y())) / (v1.x() * v2.y() - v2.x() * v1.y());
-        double t2 = (v1.y() * (p1.x() - c1.x()) + v1.x() * (c1.y() - p1.y())) / (v2.x() * v1.y() - v1.x() * v2.y());
-        if (t1 >= 0 and t1 <= 1 and t2 >= 0 and t2 <= 1) {
-            return 1;
-        }
-    }
-    c1 = obj[1];
-    c2 = obj[3];
-    v2 = c2 - c1;
-    norm_dist1 = (v2 - v1).Length();
-    norm_dist2 = (v2 + v1).Length();
-    if (norm_dist1 < 1e-06 || norm_dist2 < 1e-06) {
-        result = 0;
-    }
-    else {
-        // Calculate the intersection of two lines
-        double t1 = (v2.x() * (c1.x() - p1.x()) + v2.x() * (p1.y() - c1.y())) / (v1.x() * v2.y() - v2.x() * v1.y());
-        double t2 = (v1.y() * (p1.x() - c1.x()) + v1.x() * (c1.y() - p1.y())) / (v2.x() * v1.y() - v1.x() * v2.y());
-        if (t1 >= 0 and t1 <= 1 and t2 >= 0 and t2 <= 1) {
-            return 1;
-        }
-    }
-
+   
     return result;
 }
 

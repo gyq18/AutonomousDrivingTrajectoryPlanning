@@ -1,8 +1,8 @@
 /*
  * @Author: Lishengyong
  * @Date: 2022-04-20 12:58:06
- * @LastEditTime: 2022-04-23 10:29:33
- * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2022-05-26 11:24:57
+ * @LastEditors: 李晟永 lishengy17@mails.tsinghua.edu.cn
  * @Description: state lattice base header file
  */
 
@@ -16,7 +16,7 @@ using namespace math;
 using json = nlohmann::json;
 
 
-typedef int NodeIndex;
+using NodeIndex = int;
 
 // Position class
 // inner properties "x" and "y" are integer.
@@ -60,10 +60,9 @@ public:
 
     /**
      * @description: 
-     * @param std::string action_file. The file that saves all possible actions.
      * @param std::string insert_points_file. The points data to make trajectory more smooth.
      */
-    void load_data(std::string action_file, std::string insert_points_file);
+    void load_data(std::string insert_points_file);
     
     /**
      * @description: Get all possible action in a specific position and direction.
@@ -85,7 +84,7 @@ public:
      * Element x, y and theta are vector<double>
      */    
     std::pair<std::pair<std::vector<double>, std::vector<double> >, std::vector<double> > 
-        sample_points(Position start_pos, int start_direction, Position end_pos, int end_direction);
+        sample_points(Position start_pos, int start_direction, Position end_pos, int end_direction) const;
 
     /**
      * @description: 
@@ -119,8 +118,8 @@ public:
 class LatticeEdge {
 public:
     NodeIndex index;
-    int cost;
-    LatticeEdge(NodeIndex index, int cost) noexcept: index(index), cost(cost) {};
+    double cost;
+    LatticeEdge(NodeIndex index, double cost) noexcept: index(index), cost(cost) {};
     LatticeEdge() noexcept: index(0), cost(0) {};
 };
 

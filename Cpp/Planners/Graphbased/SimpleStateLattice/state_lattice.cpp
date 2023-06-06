@@ -2,11 +2,12 @@
 #include <fstream>
 #include <iostream>
 #include "json.hh"
+#include "actions.h"
 
 using json = nlohmann::json;
 using namespace std;
 
-int action2cost(int direction, vector<int> action)
+double action2cost(int direction, vector<int> action)
 {
     int delta_x = action[0];
     int delta_y = action[1];
@@ -89,15 +90,8 @@ void StateLatticeGraph::build_graph()
 
 }
 
-void ActionSet::load_data(string action_filename, string insert_points_filename)
+void ActionSet::load_data(string insert_points_filename)
 {
-    std::ifstream action_file;
-    action_file.open(action_filename);
-    if (!action_file.is_open())
-    {
-        cout << "Action file not found." << endl;
-        std::exit(1);
-    }
 
     std::ifstream ip_file;
     ip_file.open(insert_points_filename);
@@ -108,12 +102,8 @@ void ActionSet::load_data(string action_filename, string insert_points_filename)
     }
 
 
-
-    std::stringstream buffer;
-    buffer << action_file.rdbuf();
-    string s = string(buffer.str());
-    // load the action data.
-    this->actions = json::parse(s.data());
+    // load the actions 
+    this->actions = json::parse(action_primitives.data());
 
     std::stringstream buffer2;
     buffer2 << ip_file.rdbuf();
@@ -132,7 +122,7 @@ vector<vector<int>>  ActionSet::get_actions(Position position, int direction, in
 }
 
 pair<pair<vector<double>, vector<double> >, vector<double> > 
-        ActionSet::sample_points(Position start_pos, int start_direction, Position end_pos, int end_direction)
+        ActionSet::sample_points(Position start_pos, int start_direction, Position end_pos, int end_direction) const
 {
     auto delta_pos = end_pos - start_pos;
     // get all actions 
@@ -214,7 +204,7 @@ int state_lattice_cpp_test()
 {
     auto a = ActionSet();
 
-    a.load_data("actions.txt", "insert_points.txt");
+    a.load_data("insert_points.txt");
     auto action_0 = a.actions["9"];
     std::vector<int> action = {1, 1, 1, 1};
     int found = 0;

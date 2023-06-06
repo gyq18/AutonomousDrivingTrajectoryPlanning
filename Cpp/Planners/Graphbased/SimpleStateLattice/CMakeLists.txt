@@ -7,6 +7,7 @@ project(StateLatticePlannerCpp)
 # because constexpr used, we need c++ 17
 set (CMAKE_CXX_STANDARD 17)
 
+
 # OpenCV required. 
 # If your OpenCV is not installed in default position, then
 # add your OpenCV path to "PATHS" to help cmake find it.
@@ -14,6 +15,14 @@ set (CMAKE_CXX_STANDARD 17)
 find_package(OpenCV REQUIRED PATHS opencv_dist/lib/cmake/opencv4)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
+
+add_library(vis STATIC 
+    vis_api.cpp
+    vec2d.cpp
+
+)
+
+target_link_libraries(vis -dynamic-libstdc++)
 
 # add all cpp files ...
 add_executable(main 
@@ -26,6 +35,12 @@ add_executable(main
     state_lattice.cpp
     state_lattice_planner.cpp
 )
+
+target_link_libraries(vis
+    ${OpenCV_LIBS}
+
+    # c++ 
+    )
 
 
 target_link_libraries(main

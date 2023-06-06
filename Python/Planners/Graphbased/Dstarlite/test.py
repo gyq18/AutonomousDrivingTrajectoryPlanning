@@ -12,9 +12,9 @@ from numpy.linalg import norm as norm
 
 import globalvar
 from globalvar import vclass
-from d_star import Dstar
+from PlanDStarPath import Dstar
     
-# [x，y，θ，路径长度，完整性标志] = PlanAStarPath（）
+# [x,y,theta,length,completness] = PlanAStarPath（）
 time_start = time.time()
 pf = Dstar()
 

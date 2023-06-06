@@ -24,7 +24,7 @@ void VisualizeStaticResults(struct Trajectory trajectory) {
     cout << "min_x: " << xmin << endl;
     cout << "max_y: " << ymax << endl;
     cout << "min_y: " << ymin << endl;
-    cv_axis2d axis(xmin-5, xmax+5, ymin-5, ymax+5);
+    cv_axis2d axis(-5, 65, -5, 65);
 
     Mat canvas = Mat::ones(Size(512, 512 * (axis.y_h - axis.y_l) / (axis.x_h - axis.x_l)), CV_8UC3);
     canvas.setTo(255);
@@ -90,7 +90,7 @@ void VisualizeDynamicResults(struct Trajectory trajectory) {
     cout << "min_x: " << xmin << endl;
     cout << "max_y: " << ymax << endl;
     cout << "min_y: " << ymin << endl;
-    cv_axis2d axis(xmin - 5, xmax + 5, ymin - 5, ymax + 5);
+    cv_axis2d axis(-5, 65, -5, 65);
     Mat canvas = Mat::ones(Size(512, 512 * (axis.y_h - axis.y_l) / (axis.x_h - axis.x_l)), CV_8UC3);
     
     // draw frames

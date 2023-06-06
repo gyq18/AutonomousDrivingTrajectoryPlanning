@@ -1,9 +1,5 @@
-//
 //  D_star_lite.hpp
-//  zqc_c++
-//
-//  Created by 枉叹之 on 2022/4/29.
-//
+
 
 #ifndef D_star_lite_hpp
 #define D_star_lite_hpp

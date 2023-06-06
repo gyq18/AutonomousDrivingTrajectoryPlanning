@@ -1,0 +1,4 @@
+/home/gyq/Projects/Dynamic/cpp code/build/CMakeFiles/rebuild_cache.dir
+/home/gyq/Projects/Dynamic/cpp code/build/CMakeFiles/plan.dir
+/home/gyq/Projects/Dynamic/cpp code/build/CMakeFiles/edit_cache.dir
+/home/gyq/Projects/Dynamic/cpp code/build/CMakeFiles/main.dir
