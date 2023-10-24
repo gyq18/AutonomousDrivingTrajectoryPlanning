@@ -1,9 +1,6 @@
 # LBADTP: Libraries and Benchmarks for Autonomous Driving Trajectory Planning
 
-
-![](./results/result.png)
-
-This repository contains the implementation of the above paper. It is accepted to IEEE TIV.
+This repository contains the implementation of the following paper. It is accepted to IEEE TIV.
 - Paper Link: 
 - Authors: [Yuqing Guo](https://github.com/gyq18), [Zelin Guo](https://github.com/guozelin-ai), [Yazhou Wang](https://github.com/albertwang1), [Danya Yao](https://www.au.tsinghua.edu.cn/info/1076/1608.htm), [Bai Li](http://grjl.hnu.edu.cn/p/19232984984B4AF50942E7C9F74E071F), [Li Li](https://www.au.tsinghua.edu.cn/info/1096/1530.htm)
     - Contact Yuqing via email: gyq18@mails.tsinghua.org.cn)
