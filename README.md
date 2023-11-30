@@ -1,7 +1,7 @@
 # LBADTP: Libraries and Benchmarks for Autonomous Driving Trajectory Planning
 
 This repository contains the implementation of the following paper. It is accepted to IEEE TIV.
-- Paper Link: 
+- Paper Link: https://ieeexplore.ieee.org/document/10329446/
 - Authors: [Yuqing Guo](https://github.com/gyq18), [Zelin Guo](https://github.com/guozelin-ai), [Yazhou Wang](https://github.com/albertwang1), [Danya Yao](https://www.au.tsinghua.edu.cn/info/1076/1608.htm), [Bai Li](http://grjl.hnu.edu.cn/p/19232984984B4AF50942E7C9F74E071F), [Li Li](https://www.au.tsinghua.edu.cn/info/1096/1530.htm)
     - Contact Yuqing via email: gyq18@mails.tsinghua.org.cn)
 
@@ -98,18 +98,18 @@ Matlab/
 
 If you find our code or paper useful, please consider citing
 ```
-@article{guo2023XXX,
-  title={XXXXX},
-  author={XXXX},
-  journal={XXXXX},
-  year={XXXXX},
-  publisher={XXXXX}
-}
+@ARTICLE{10329446,
+  author={Guo, Yuqing and Guo, Zelin and Wang, Yazhou and Yao, Danya and Li, Bai and Li, Li},
+  journal={IEEE Transactions on Intelligent Vehicles}, 
+  title={A Survey of Trajectory Planning Methods for Autonomous Driving — Part I: Unstructured Scenarios}, 
+  year={2023},
+  pages={1-29},
+  doi={10.1109/TIV.2023.3337318}}
 ```
 
 ## Contributors
-- [Yuqing Guo](https://github.com/gyq18), [Zelin Guo](https://github.com/guozelin-ai), [Yazhou Wang](https://github.com/albertwang1), [Danya Yao](https://www.au.tsinghua.edu.cn/info/1076/1608.htm), and [Li Li](https://www.au.tsinghua.edu.cn/info/1096/1530.htm) are with the Department of Automation, Tsinghua University, Beijing 100084, China.
-- [Bai Li](https://github.com/libai1943) and [Yakun Ouyang](https://github.com/yakunouyang) with the College of Mechanical and Vehicle Engineering, Hunan
+- [Yuqing Guo](https://github.com/gyq18), [Zelin Guo](https://github.com/guozelin-ai), [Danya Yao](https://www.au.tsinghua.edu.cn/info/1076/1608.htm), and [Li Li](https://www.au.tsinghua.edu.cn/info/1096/1530.htm) are with the Department of Automation, Tsinghua University, Beijing 100084, China.
+- [Bai Li](https://github.com/libai1943), [Yazhou Wang](https://github.com/albertwang1) and [Yakun Ouyang](https://github.com/yakunouyang) with the College of Mechanical and Vehicle Engineering, Hunan
 University, Changsha 410082, China.
 
 ## Acknowledgement
