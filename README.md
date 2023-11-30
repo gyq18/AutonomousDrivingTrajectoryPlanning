@@ -109,8 +109,7 @@ If you find our code or paper useful, please consider citing
 
 ## Contributors
 - [Yuqing Guo](https://github.com/gyq18), [Zelin Guo](https://github.com/guozelin-ai), [Danya Yao](https://www.au.tsinghua.edu.cn/info/1076/1608.htm), and [Li Li](https://www.au.tsinghua.edu.cn/info/1096/1530.htm) are with the Department of Automation, Tsinghua University, Beijing 100084, China.
-- [Bai Li](https://github.com/libai1943), [Yazhou Wang](https://github.com/albertwang1) and [Yakun Ouyang](https://github.com/yakunouyang) with the College of Mechanical and Vehicle Engineering, Hunan
-University, Changsha 410082, China.
+- [Bai Li](https://github.com/libai1943), [Yazhou Wang](https://github.com/albertwang1) and [Yakun Ouyang](https://github.com/yakunouyang) are with the College of Mechanical and Vehicle Engineering, Hunan University, Changsha 410082, China.
 
 ## Acknowledgement
 
